@@ -6,6 +6,7 @@
 # Importing modules and packages
 ##########################################################################################
 import datetime
+import time
 import os
 import sys
 
@@ -16,11 +17,14 @@ import webbrowser
 
 from random import randint
 
-##########################################################################################
-#        Clear Terminal
-##########################################################################################
-os.system('cls' if os.name == 'nt' else 'clear')
+import logging as log
 
+##########################################################################################
+#        Setup
+##########################################################################################
+os.system('cls' if os.name == 'nt' else 'clear') # Clears terminal
+log.basicConfig(filename='app.log', filemode='w', format='[%(asctime)s] %(levelname)s: %(message)s') # sets up the output log system
+log.info("Application has begun running")
 
 ##########################################################################################
 # Defining functions
@@ -53,7 +57,7 @@ def exponentialDistro():
     """
     TODO: create exponential distrobution with a mean of 720 somehow uses to determine cell regen
     """
-    return numpy.random.exponential(720)
+    return numpy.random.exponential(5)
 
 # for printing different colored text to the terminal
 class TextColors:
@@ -88,7 +92,7 @@ NumberOfRuns = 3
 #    Physical Parameters
 ##########################################################################################
 MOI = 10 ** 0  # (10**-5) to 1 = 0.00001
-beta = 2.3 * (10 ** -7)
+beta = 2
 rho = 562800
 D = 6 * 10 ** (-12)  # 6*10**(-12)#3.96e-8 # diffusion
 c = 0.105 #
@@ -235,11 +239,15 @@ for BigIndex in range(NumberOfRuns):
           "\nNumber of Cells =", len(Index[0]),
           TextColors.END)
 
+    log.info("Hexagon Side Length =", s,
+            "\nNumber of Layers =", NumberOfLayers,
+            "\nRadius of Circle =", RadiusOfCircle,
+            "\nNumber of Cells =", len(Index[0]))
+
     # print(TextColors.BLUE + "\nStructure Is Complete\n" + TextColors.END)
     # print("% Completed\t Healthy cells\t Infected cells\t Dead cells")
 
     print(TextColors.BLUE + "% Completed\t " + TextColors.GREEN + "Healthy cells\t " + TextColors.YELLOW + "Infected cells\t " + TextColors.RED + "Dead cells\t" + TextColors.INFO + TextColors.BOLD + "NumberOfCells" + TextColors.END)
-
     LocationData = QRIndexing
     NumberOfLayers = int(NumberOfLayers)
     NumberOfCells = float(len(Index[0]))
@@ -327,6 +335,7 @@ for BigIndex in range(NumberOfRuns):
     if (D * timestep / (deltxprime ** 2) > 0.5) is True:
         print(D * timestep / (deltxprime ** 2))
         sys.exit("CHANGE PARAMETERS TO FIT DIFFUSION LIMITS. VALUE MUST BE UNDER 0.5. VALUE SHOWN ABOVE")
+        log.error("CHANGE PARAMETERS TO FIT DIFFUSION LIMITS. VALUE MUST BE UNDER 0.5.")
 
     ###################################################################
     #                                                                 #
@@ -644,47 +653,53 @@ for BigIndex in range(NumberOfRuns):
                         rightcolumnExists = False
                         rightcolumn = 0
 
+                    def resetArrays(ROW, COL):
+                        ecl[ROW, COL] = Te()
+                        th[ROW, COL] = 0
+                        inf[ROW, COL] = Ti()
+
+                    def setHealthy():
+                        cells[row, column] = 'h'
+
                     if leftcolumnExists and cells[row, leftcolumn] != '0':
                         if cells[row, leftcolumn] == 'h':
                             # the cell one to the left
-                            cells[row, column] = 'h'
-                            ecl[row, leftcolumn] = ecl[row, leftcolumn] + Te()
+                            setHealthy()
+                            resetArrays(row, leftcolumn)
 
                     if rightcolumnExists and cells[row, rightcolumn] != '0':
                         if cells[row, rightcolumn] == 'h':
                             # the cell one to the right
-                            cells[row, column] = 'h'
-                            ecl[row, rightcolumn] = ecl[row, rightcolumn] + Te()
+                            setHealthy()
+                            resetArrays(row, rightcolumn)
 
                     if aboverowExists and cells[aboverow, column] != '0':
                         if cells[aboverow, column] == 'h':
                             # the cell one up
-                            cells[row, column] = 'h'
-                            ecl[aboverow, column] = ecl[aboverow, column] + Te()
+                            setHealthy()
+                            resetArrays(aboverow, column)
 
                     if belowrowExists and cells[belowrow, column] != '0':
                         if cells[belowrow, column] == 'h':
                             # the cell down one
-                            cells[row, column] = 'h'
-                            ecl[belowrow, column] = ecl[belowrow, column] + Te()
+                            setHealthy()
+                            resetArrays(belowrow, column)
 
                     if aboverowExists and rightcolumnExists == 1 and cells[aboverow, rightcolumn] != '0':
                         if cells[aboverow, rightcolumn] == 'h':
                             # the cell diagonally up and right
-                            cells[aboverow, column] = 'h'
-                            ecl[aboverow, rightcolumn] = ecl[aboverow, rightcolumn] + Te()
+                            setHealthy()
+                            resetArrays(aboverow, rightcolumn)
 
                     if belowrowExists and leftcolumnExists == 1 and cells[belowrow, leftcolumn] != '0':
                         if cells[belowrow, leftcolumn] == 'h':
                             # the cell diagonally down and left
-                            cells[belowrow, column] = 'h'
+                            setHealthy()
+                            resetArrays(belowrow, leftcolumn)
 
-                            print(ecl[belowrow, leftcolumn] + Te())
-                            ecl[belowrow, leftcolumn] = ecl[belowrow, leftcolumn] + Te()
-
-                    printInfo('A cell regeneration has occured')
+                    printInfo("A cell regeneration has occured")
+                    log.info("A cell regeneration has occured")
                     regen = False
-
 
 
 
@@ -751,7 +766,14 @@ for BigIndex in range(NumberOfRuns):
             if timestepcount % int(NumberofSavedTimeSteps / 10) == 0.0:
                 percent = str(round(timestepcount * 100 / NumberofTimeSteps, 2)) + "%"
 
-                print(str(TextColors.BLUE + "{}\t\t " + TextColors.GREEN + "{}\t\t " + TextColors.YELLOW + "{}\t\t " + TextColors.RED + "{}\t\t" + TextColors.INFO + TextColors.BOLD + "{}" + TextColors.END).format(percent, NumberHealthy, NumberOfInfectedCellsCount, NumberDead, NumberOfCells))
+                # print(str(TextColors.BLUE + "{}\t\t " + TextColors.GREEN + "{}\t\t " + TextColors.YELLOW + "{}\t\t " + TextColors.RED + "{}\t\t" + TextColors.INFO + TextColors.BOLD + "{}" + TextColors.END).format(percent, NumberHealthy, NumberOfInfectedCellsCount, NumberDead, NumberOfCells))
+                progressInfo = str(TextColors.BLUE + "{}\t\t " + TextColors.GREEN + "{}\t\t " + TextColors.YELLOW + "{}\t\t " + TextColors.RED + "{}\t\t" + TextColors.INFO + TextColors.BOLD + "{}" + TextColors.END).format(percent, NumberHealthy, NumberOfInfectedCellsCount, NumberDead, NumberOfCells)
+                clearCharacters = "\r%s" # Clears current line and overwrites with updates text
+
+                sys.stdout.write(clearCharacters % progressInfo)
+                sys.stdout.flush()
+
+
 
                 # print(" {}\t\t {}\t\t {}\t\t {}".format(percent, NumberHealthy, NumberOfInfectedCellsCount, NumberDead))
         except:
