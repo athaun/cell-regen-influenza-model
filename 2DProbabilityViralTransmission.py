@@ -47,7 +47,7 @@ def exponentialDistro():
     """
     TODO: create exponential distrobution with a mean of 720 somehow uses to determine cell regen
     """
-    return numpy.random.exponential(1)
+    return numpy.random.exponential(3 * 24)
 
 # for printing different colored text to the terminal
 class Tc:
@@ -81,11 +81,11 @@ NumberOfRuns = 2
 ################################################################################
 #    Physical Parameters
 ################################################################################
-MOI = 10**(-2) #(10**-5) to 1
-beta = 2.0
-rho = 562800
-D = 6*10**(-12)
-c = 0.105
+MOI = 10**(-2) #(10**-5) to 1 # fraction of cells intially infected
+beta = 2.0 # infection rate
+rho = 562800 # the probability of a cell getting inected (higher = more likely)
+D = 6*10**(-12) # Diffusion coefficient (spaceUnit^2/seconds) how quickly the virus spread out
+c = 0.105 # clearance rate of the virus (virus cleared/time unit)
 deltx = 25.0e-06
 deltxprime = deltx*2
 Dtsx2 = D*timestep*(deltxprime**-2)
@@ -105,7 +105,7 @@ probi = 0.2  # Probability per unit time of cell to cell infection (/hour)
 
 
 totalRegenerations = 0
-numberRegenerated = 0
+
 
 
 
@@ -591,9 +591,10 @@ for BigIndex in range(NumberOfRuns):
                         #"ecl" is the time matrix for after eclipse phase
                         #"th" is the time matrix for healthy cells
                         #"cells" is the matrix of cells
-        IndexDead = numpy.where(cells == "d")
+        IndexDead = numpy.where(cells == 'd')
             #IndexDead is a list of arrays, in this case two arrays
         NumberDead = len(IndexDead[0])
+        numberDeadBefore = NumberDead
             #NumberDead is a number
 
 
@@ -618,60 +619,40 @@ for BigIndex in range(NumberOfRuns):
         # CELL REGENERATION
         #############################################################
 
-        # once the cell is picked for regeneration, the program checks to see if the cell is next to a healthy cells
-
-        # indexDead = numpy.where(cells == "d")
-        # # IndexDead is a list of arrays, in this case two arrays
-        # NumberDead = len(IndexDead[0])
-        # # NumberDead is a number
         locationDead = numpy.vstack(IndexDead)
-        # LocationDead is a matrix
-        regen = False
-
-
 
         if NumberDead != 0:
+
             for j in range(NumberDead):
 
                 [row, column] = locationDead[:, j]
                 # row is the row location of for a cell
                 # column is the column location for a cell
 
-                if ut[Row, Column] > inf[Row, Column] + ecl[Row, Column] + th[Row, Column] + exponentialDistro():
-                    regen = True
+                if ut[row, column] > inf[row, column] + ecl[row, column] + th[row, column] + exponentialDistro():
+                    ecl[row, column] = Te()
+                    th[row, column] = 0
+                    inf[row, column] = Ti()
 
-                if regen:
+                    cells[row, column] = 'h'
 
-                    numberRegenerated = 0
 
-                    def resetArrays(ROW, COL):
-                        print("Regen occured");
-                        global numberRegenerated
-                        numberRegenerated = numberRegenerated + 1
-                        ecl[ROW, COL] = Te()
-                        th[ROW, COL] = 0
-                        inf[ROW, COL] = Ti()
 
-                    def setHealthy():
-                        cells[row, column] = 'h'
+                    indexDead = numpy.where(cells == 'd') # IndexDead is a list of arrays, in this case two arrays
+                    NumberDead = len(IndexDead[0]) # NumberDead is a number
 
-                    setHealthy();
-                    resetArrays(row, column);
-                    # print("A cell regeneration has occured")
-                    # log.info("A cell regeneration has occured")
+                    numberDeadAfter = NumberDead
 
-                    if numberRegenerated >= 1:
-                        totalRegenerations = totalRegenerations + 1
-
-                    regen = False
+                    totalRegenerations = numberDeadBefore - numberDeadAfter
+                    print("{} {} {}".format(totalRegenerations, numberDeadBefore, numberDeadAfter))
 
 
 
 
-        indexDead = numpy.where(cells == "d")
-        # IndexDead is a list of arrays, in this case two arrays
-        NumberDead = len(IndexDead[0])
-        # NumberDead is a number
+
+
+
+
 
 
 
@@ -700,11 +681,19 @@ for BigIndex in range(NumberOfRuns):
 
         if((timestepcount % Save) == 0):
 
-            day = (timestepcount * timestep)//24
-            progressInfo = str(Tc.BLUE + "{}\t\t " + Tc.GREEN + "{}\t\t " + Tc.YELLOW + "{}\t\t " + Tc.RED + "{}\t\t" + Tc.INFO + Tc.BOLD + "{}" + Tc.END).format(day, NumberHealthy, str(NumberEclipse) + "/" + str(NumberInfected), NumberDead, totalRegenerations)
-            clearCharacters = "\r%s" # Clears current line and overwrites with updates text
+            # day = (timestepcount * timestep)//24
+            # progressInfo = str(Tc.BLUE + "{}\t\t " + Tc.GREEN + "{}\t\t " + Tc.YELLOW + "{}\t\t " + Tc.RED + "{}\t\t" + Tc.INFO + Tc.BOLD + "{}" + Tc.END).format(day, NumberHealthy, str(NumberEclipse) + "/" + str(NumberInfected), NumberDead, totalRegenerations)
+            # # clearCharacters = "\r%s" # Clears current line and overwrites with updates text
+            # clearCharacters = ""
+            # sys.stdout.write(clearCharacters + progressInfo)
 
-            sys.stdout.write(clearCharacters % progressInfo)
+            # print(int(timestepcount*timestep),",",
+            #       str(NumberHealthy),",",
+            #       str(NumberEclipse),",",
+            #       str(NumberInfected),",",
+            #       str(NumberDead),",",
+            #       str(AmountOfVirus),",",
+            #       str(totalRegenerations))
 
 
             with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
