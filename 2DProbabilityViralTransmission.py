@@ -217,8 +217,16 @@ for BigIndex in range(NumberOfRuns):
             print(", ".join(["{}".format(i) for i in n]),file = outfile)
 
     with open(os.path.join(Path_to_Folder,"Parameters.txt"),"w") as outfile:
-        infoString = str(Tc.BLUE + "Day\t" + Tc.GREEN + "\t Healthy\t" + Tc.YELLOW + "Ecl/Inf\t\t" + Tc.RED + "Dead\t\t" + Tc.INFO + Tc.BOLD + "# Regens" + Tc.END)
-        print(infoString);
+        # infoString = str(Tc.BLUE + "Day\t" + Tc.GREEN + "\t Healthy\t" + Tc.YELLOW + "Ecl/Inf\t\t" + Tc.RED + "Dead\t\t" + Tc.INFO + Tc.BOLD + "# Regens" + Tc.END)
+        # print(infoString);
+
+        print("Day \t",
+              "NumberHealthy\t",
+              "NumberEclipse\t",
+              "NumberInfected\t",
+              "NumberDead\t",
+              "totalRegenerations")
+
         print("Hexagon Side Length =",s,
               "\nNumber of Layers =",NumberOfLayers,
               "\nRadius of Circle =",RadiusOfCircle,
@@ -398,8 +406,6 @@ for BigIndex in range(NumberOfRuns):
             if NumberInfected != 0:
                 for j in range(NumberInfected):
                     [Row,Column] = LocationInfected[:,j]
-                        #Row is the row location of for a cell
-                        #Column is the column location for a cell
 
                     #unless dictated otherwise, all cells around target cell exist (binary toggle)
                     AboveRowExists = 1
@@ -636,15 +642,18 @@ for BigIndex in range(NumberOfRuns):
 
                     cells[row, column] = 'h'
 
+                    print("A regen occured")
 
-
+                    locationDead = numpy.vstack(IndexDead)
                     indexDead = numpy.where(cells == 'd') # IndexDead is a list of arrays, in this case two arrays
                     NumberDead = len(IndexDead[0]) # NumberDead is a number
 
-                    numberDeadAfter = NumberDead
+                    # NumberDead -= 1
 
-                    totalRegenerations = numberDeadBefore - numberDeadAfter
-                    print("{} {} {}".format(totalRegenerations, numberDeadBefore, numberDeadAfter))
+                    # numberDeadAfter = NumberDead
+
+                    totalRegenerations += 1
+                    # print("{} {} {}".format(totalRegenerations, numberDeadBefore, numberDeadAfter))
 
 
 
@@ -687,13 +696,12 @@ for BigIndex in range(NumberOfRuns):
             # clearCharacters = ""
             # sys.stdout.write(clearCharacters + progressInfo)
 
-            # print(int(timestepcount*timestep),",",
-            #       str(NumberHealthy),",",
-            #       str(NumberEclipse),",",
-            #       str(NumberInfected),",",
-            #       str(NumberDead),",",
-            #       str(AmountOfVirus),",",
-            #       str(totalRegenerations))
+            print(int(timestepcount*timestep),"\t",
+                  str(NumberHealthy),"\t\t",
+                  str(NumberEclipse),"\t\t",
+                  str(NumberInfected),"\t\t",
+                  str(NumberDead),"\t\t",
+                  str(totalRegenerations))
 
 
             with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
