@@ -220,12 +220,20 @@ for BigIndex in range(NumberOfRuns):
         # infoString = str(Tc.BLUE + "Day\t" + Tc.GREEN + "\t Healthy\t" + Tc.YELLOW + "Ecl/Inf\t\t" + Tc.RED + "Dead\t\t" + Tc.INFO + Tc.BOLD + "# Regens" + Tc.END)
         # print(infoString);
 
-        print("Day \t",
-              "NumberHealthy\t",
+        print(Tc.INFO,
+              "Hexagon Side Length =",s,
+              "\nNumber of Layers =",NumberOfLayers,
+              "\nRadius of Circle =",RadiusOfCircle,
+              "\nNumber of Cells =", len(Index[0]),
+              "\nSaved to: ", Path_to_Folder, Tc.END)
+
+        print(Tc.BLUE,
+              "Day \t", Tc.GREEN,
+              "NumberHealthy\t", Tc.YELLOW,
               "NumberEclipse\t",
-              "NumberInfected\t",
-              "NumberDead\t",
-              "totalRegenerations")
+              "NumberInfected\t", Tc.RED,
+              "NumberDead\t", Tc.INFO,
+              "totalRegenerations", Tc.END)
 
         print("Hexagon Side Length =",s,
               "\nNumber of Layers =",NumberOfLayers,
@@ -254,6 +262,7 @@ for BigIndex in range(NumberOfRuns):
     vtemp = numpy.empty([Ny,Nx,3],dtype = float)#Produces a matrix that will be filled with the amount virus above each cell
     th = numpy.empty([Ny,Nx],dtype = float) #Produces a time matrix hor healthy cells (t)
     ut = numpy.empty([Ny,Nx],dtype = float) #Produces a univeral time matrix (ut)
+    timeDead = numpy.empty([Ny,Nx],dtype = float)
     tsmatrix = numpy.empty([Ny,Nx],dtype = float)
 
     ############################################################################
@@ -264,6 +273,7 @@ for BigIndex in range(NumberOfRuns):
     inf.fill(0.0)
     vtemp.fill(0.0)
     th.fill(0.0)
+    timeDead.fill(0.0);
     ut.fill(0.0)
     tsmatrix.fill(timestep) #Produces a matrix filled with value of time step
 
@@ -363,14 +373,14 @@ for BigIndex in range(NumberOfRuns):
             #LocationHealthy is a matrix
         NumberHealthy = len(IndexHealthy[0])
             #NumberHealthy is a number
-        if NumberHealthy != 0:
-            for j in range(NumberHealthy):
-                [Row,Column] = LocationHealthy[:,j]
-                    #Row is the row location of for a cell
-                    #Column is the column location for a cell
-                th[Row,Column] = th[Row,Column] + timestep
-                    #"th" is the time matrix for healthy cells
-                    #"ts" is the time step for the model
+        # if NumberHealthy != 0:
+        for j in range(NumberHealthy):
+            [Row,Column] = LocationHealthy[:,j]
+                #Row is the row location of for a cell
+                #Column is the column location for a cell
+            th[Row,Column] = th[Row,Column] + timestep
+                #"th" is the time matrix for healthy cells
+                #"ts" is the time step for the model
         #####################################
         #    Eclipse phase -> Infection     #
         #####################################
@@ -592,11 +602,25 @@ for BigIndex in range(NumberOfRuns):
                     #Column is the column location for a cell
                 if ut[Row,Column] > (inf[Row,Column] + ecl[Row,Column] + th[Row,Column]):
                     cells[Row,Column] = 'd'
+
+                    IndexDead = numpy.where(cells == 'd')
+                    LocationDead = numpy.vstack(IndexDead)
+                        #IndexDead is a list of arrays, in this case two arrays
+                    NumberDead = len(IndexDead[0])
                         #"ut" is the univeral time matrix
                         #"inf" is the time matrix for after infection phase
                         #"ecl" is the time matrix for after eclipse phase
                         #"th" is the time matrix for healthy cells
                         #"cells" is the matrix of cells
+
+                    if NumberDead != 0:
+                        for j in range(NumberDead):
+                            [Row,Column] = LocationDead[:,j]
+                                #Row is the row location of for a cell
+                                #Column is the column location for a cell
+                            timeDead[Row,Column] = timeDead[Row,Column] + timestep
+                                #"th" is the time matrix for healthy cells
+                                #"ts" is the time step for the model
         IndexDead = numpy.where(cells == 'd')
             #IndexDead is a list of arrays, in this case two arrays
         NumberDead = len(IndexDead[0])
@@ -636,21 +660,28 @@ for BigIndex in range(NumberOfRuns):
                 # column is the column location for a cell
 
                 if ut[row, column] > inf[row, column] + ecl[row, column] + th[row, column] + exponentialDistro():
+                    th[row, column] = (inf[row, column] + ecl[row, column] + th[row, column] + timeDead[row,column])
                     ecl[row, column] = Te()
-                    th[row, column] = 0
                     inf[row, column] = Ti()
 
                     cells[row, column] = 'h'
 
-                    print("A regen occured")
+                    # print("A regen occured")
 
                     locationDead = numpy.vstack(IndexDead)
                     indexDead = numpy.where(cells == 'd') # IndexDead is a list of arrays, in this case two arrays
                     NumberDead = len(IndexDead[0]) # NumberDead is a number
 
+
+                    IndexHealthy = numpy.where(cells == 'h')
+                        #IndexHealthy is a list of arrays, in this case two arrays
+                    LocationHealthy = numpy.vstack(IndexHealthy)
+                        #LocationHealthy is a matrix
+                    NumberHealthy = len(IndexHealthy[0])
+
                     # NumberDead -= 1
 
-                    # numberDeadAfter = NumberDead
+                    numberDeadAfter = NumberDead
 
                     totalRegenerations += 1
                     # print("{} {} {}".format(totalRegenerations, numberDeadBefore, numberDeadAfter))
@@ -688,7 +719,7 @@ for BigIndex in range(NumberOfRuns):
 
 
 
-        if((timestepcount % Save) == 0):
+        # if((timestepcount % Save) == 0):
 
             # day = (timestepcount * timestep)//24
             # progressInfo = str(Tc.BLUE + "{}\t\t " + Tc.GREEN + "{}\t\t " + Tc.YELLOW + "{}\t\t " + Tc.RED + "{}\t\t" + Tc.INFO + Tc.BOLD + "{}" + Tc.END).format(day, NumberHealthy, str(NumberEclipse) + "/" + str(NumberInfected), NumberDead, totalRegenerations)
@@ -696,23 +727,25 @@ for BigIndex in range(NumberOfRuns):
             # clearCharacters = ""
             # sys.stdout.write(clearCharacters + progressInfo)
 
-            print(int(timestepcount*timestep),"\t",
-                  str(NumberHealthy),"\t\t",
-                  str(NumberEclipse),"\t\t",
-                  str(NumberInfected),"\t\t",
-                  str(NumberDead),"\t\t",
-                  str(totalRegenerations))
+        # print("Hello {}".format(NumberHealthy), end = "\r")
 
+        print(Tc.BLUE,
+              int(timestepcount*timestep),"\t", Tc.GREEN,
+              str(NumberHealthy),"\t\t", Tc.YELLOW,
+              str(NumberEclipse),"\t\t",
+              str(NumberInfected),"\t\t", Tc.RED,
+              str(NumberDead),"\t\t", Tc.INFO,
+              str(totalRegenerations), Tc.END, end = "\r")
 
-            with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
-                print(int(timestepcount*timestep),",",
-                      str(NumberHealthy),",",
-                      str(NumberEclipse),",",
-                      str(NumberInfected),",",
-                      str(NumberDead),",",
-                      str(AmountOfVirus),",",
-                      str(totalRegenerations),",",
-                      file = outfile)
+        with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
+            print(int(timestepcount*timestep),",",
+                  str(NumberHealthy),",",
+                  str(NumberEclipse),",",
+                  str(NumberInfected),",",
+                  str(NumberDead),",",
+                  str(AmountOfVirus),",",
+                  str(totalRegenerations),",",
+                  file = outfile)
 
         ##########################################
         #   garbages unused/unreferenced memory  #
