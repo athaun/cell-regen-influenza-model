@@ -1,4 +1,4 @@
 # TCU Research Apprenticeship Program - Virus Modeling
 
-Run multiple the java program with:
+Run the test with: (it will take a long time to finish)
 ```javac runTest.java; java runTest```
