@@ -11,7 +11,7 @@ class runTest {
 
       for (int runCount = 0; runCount < runParameters.length; runCount ++) {
         System.out.println("Running viral transmission Code with regeneration parameter \"" + runParameters[runCount] + "\".");
-        runBashCmd("python3 testFile.py " + runParameters[runCount]); // Run each test individually with one of the parameters
+        runBashCmd("python3 2DProbabilityViralTransmission.py " + runParameters[runCount]); // Run each test individually with one of the parameters
       }
 
     }
