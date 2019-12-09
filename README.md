@@ -22,6 +22,8 @@ $ python3 2DProbabilityViralTransmission.py ***
 * [python 3.7](https://www.python.org/downloads/) (I recommend just downloading [anaconda 3.7](https://www.anaconda.com/distribution/))
 * [numpy](https://numpy.org/) (included in Anaconda)
 
+<hr>
+
 ## Running (cuda) version (work in progress):
 
 Download/clone (and extract) to any directory, which will be referenced as `base/`
