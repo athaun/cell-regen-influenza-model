@@ -1,11 +1,3 @@
-import sys
-# print (sys.argv)
-# print("Python running | '{}'".format(sys.argv))
-# print("Done")
-
-runParameter = float(sys.argv[1])
-# print("Running with parameter \"" + runParameter + "\".")
-
 ################################################################################
 #
 #                          Virus Model
@@ -22,10 +14,18 @@ import gc
 import sys
 import os
 
+os.system('cls' if os.name=='nt' else 'clear')
+
+try:
+    runParameter = float(sys.argv[1]) # collect parameter passed with program run
+except:
+    runParameter = 0.003
+    print("No parameters passed to program, defaulting to {}".format(runParameter))
+
 ################################################################################
 #        Clear Terminal
 ################################################################################
-os.system('cls' if os.name=='nt' else 'clear')
+
 
 ################################################################################
 # Defining functions
@@ -55,7 +55,7 @@ def exponentialDistro():
     """
     TODO: create exponential distrobution with a mean of 720 somehow uses to determine cell regen
     """
-    return numpy.random.exponential(runParameter * 24)
+    return numpy.random.exponential(runParameter * 24) # takes number from command line, must have input to run
 
 # for printing different colored text to the terminal
 class Tc:
@@ -68,32 +68,26 @@ class Tc:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def printInfo(text):
-    print(TextColors.INFO + text + TextColors.END)
-
-def printWarning(text):
-    print(TextColors.RED + TextColors.BOLD + TextColors.UNDERLINE + text + TextColors.END)
-
-
 ################################################################################
 #      Simulation Parameters
 ################################################################################
 CELL2CELL = 0
 FREECELL = 1
 timestep = 0.005    # Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1/3600) hr = 1 sec
-endtime = 365*24   # Days in hours, Need 7 days
+endtime = 365*24   # Days in hours, Need 7 daysrunParameter = float(sys.argv[1])
 Save = (1/timestep) #the number of time the program saves to file, (1/timestep) results in 1 save very simulated hour
-NumberOfLayers = 578 #607 is a million hexigon in a circle (each layer is 17.2857143 cells)
+NumberOfLayers = 7 #193 #607 is a million hexagons in a circle
 NumberOfRuns = 2
 
 ################################################################################
 #    Physical Parameters
 ################################################################################
-MOI = 10**(-2) #(10**-5) to 1 # fraction of cells intially infected
-beta = 2.0 # infection rate
-rho = 562800 # the probability of a cell getting inected (higher = more likely)
-D = 6*10**(-12) # Diffusion coefficient (spaceUnit^2/seconds) how quickly the virus spread out
-c = 0.105 # clearance rate of the virus (virus cleared/time unit)
+moiTo = -2
+MOI = 10**(moiTo) #(10**-5) to 1
+beta = 2.0
+rho = 562800
+D = 6*10**(-12)
+c = 0.105
 deltx = 25.0e-06
 deltxprime = deltx*2
 Dtsx2 = D*timestep*(deltxprime**-2)
@@ -107,24 +101,13 @@ ne = 30.0     #
 ni = 100.0     #
 probi = 0.2  # Probability per unit time of cell to cell infection (/hour)
 
-
-
-
-
-
 totalRegenerations = 0
-
-
-
-
-
 
 ################################################################################
 
 #                Loop For The number Of Simulations To Run Per Setting
 
 ################################################################################
-print("Program is starting")
 for BigIndex in range(NumberOfRuns):
     ############################################################################
     #        Creating Save Path
@@ -137,7 +120,7 @@ for BigIndex in range(NumberOfRuns):
         s = "FREECELL"
         if FREECELL == 0:
             s = "Neither"
-    directory = os.path.join("".join("ViralModel/"+"{}".format(NumberOfLayers)+"_{}".format(BigIndex)+"-"+s+"_{}-".format(numpy.log10(MOI))+"MOI"))
+    directory = os.path.join("".join("ViralModel/"+"{}".format(NumberOfLayers)+"_{}".format(BigIndex)+"-"+s+"_{}-".format(numpy.log10(MOI))+"MOI" + "{0}-RP".format(runParameter)))
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -226,15 +209,13 @@ for BigIndex in range(NumberOfRuns):
             print(", ".join(["{}".format(i) for i in n]),file = outfile)
 
     with open(os.path.join(Path_to_Folder,"Parameters.txt"),"w") as outfile:
-        # infoString = str(Tc.BLUE + "Day\t" + Tc.GREEN + "\t Healthy\t" + Tc.YELLOW + "Ecl/Inf\t\t" + Tc.RED + "Dead\t\t" + Tc.INFO + Tc.BOLD + "# Regens" + Tc.END)
-        # print(infoString);
-
         print(Tc.INFO,
               "Hexagon Side Length =",s,
               "\nNumber of Layers =",NumberOfLayers,
               "\nRadius of Circle =",RadiusOfCircle,
               "\nNumber of Cells =", len(Index[0]),
               "\nExponential Distro =", runParameter,
+              "\nMOI =", MOI, " | 10^", moiTo,
               "\nSaved to: ", Path_to_Folder, Tc.END)
 
         print(Tc.BLUE,
@@ -249,6 +230,7 @@ for BigIndex in range(NumberOfRuns):
               "\nNumber of Layers =",NumberOfLayers,
               "\nRadius of Circle =",RadiusOfCircle,
               "\nNumber of Cells =", len(Index[0]),
+              "\nMOI =", MOI, " | 10^", moiTo,
               "\nExponential Distro =", runParameter,
               file = outfile)
 
@@ -272,8 +254,8 @@ for BigIndex in range(NumberOfRuns):
     inf = numpy.empty([Ny,Nx],dtype = float) #Produces a time matrix for after infection phase (i)
     vtemp = numpy.empty([Ny,Nx,3],dtype = float)#Produces a matrix that will be filled with the amount virus above each cell
     th = numpy.empty([Ny,Nx],dtype = float) #Produces a time matrix hor healthy cells (t)
-    ut = numpy.empty([Ny,Nx],dtype = float) #Produces a univeral time matrix (ut)
     timeDead = numpy.empty([Ny,Nx],dtype = float)
+    ut = numpy.empty([Ny,Nx],dtype = float) #Produces a univeral time matrix (ut)
     tsmatrix = numpy.empty([Ny,Nx],dtype = float)
 
     ############################################################################
@@ -284,8 +266,8 @@ for BigIndex in range(NumberOfRuns):
     inf.fill(0.0)
     vtemp.fill(0.0)
     th.fill(0.0)
-    timeDead.fill(0.0)
     ut.fill(0.0)
+    timeDead.fill(0.0);
     tsmatrix.fill(timestep) #Produces a matrix filled with value of time step
 
     ############################################################################
@@ -384,14 +366,14 @@ for BigIndex in range(NumberOfRuns):
             #LocationHealthy is a matrix
         NumberHealthy = len(IndexHealthy[0])
             #NumberHealthy is a number
-        # if NumberHealthy != 0:
-        for j in range(NumberHealthy):
-            [Row,Column] = LocationHealthy[:,j]
-                #Row is the row location of for a cell
-                #Column is the column location for a cell
-            th[Row,Column] = th[Row,Column] + timestep
-                #"th" is the time matrix for healthy cells
-                #"ts" is the time step for the model
+        if NumberHealthy != 0:
+            for j in range(NumberHealthy):
+                [Row,Column] = LocationHealthy[:,j]
+                    #Row is the row location of for a cell
+                    #Column is the column location for a cell
+                th[Row,Column] = th[Row,Column] + timestep
+                    #"th" is the time matrix for healthy cells
+                    #"ts" is the time step for the model
         #####################################
         #    Eclipse phase -> Infection     #
         #####################################
@@ -427,6 +409,8 @@ for BigIndex in range(NumberOfRuns):
             if NumberInfected != 0:
                 for j in range(NumberInfected):
                     [Row,Column] = LocationInfected[:,j]
+                        #Row is the row location of for a cell
+                        #Column is the column location for a cell
 
                     #unless dictated otherwise, all cells around target cell exist (binary toggle)
                     AboveRowExists = 1
@@ -630,13 +614,23 @@ for BigIndex in range(NumberOfRuns):
                                 #Row is the row location of for a cell
                                 #Column is the column location for a cell
                             timeDead[Row,Column] = timeDead[Row,Column] + timestep
-                                #"th" is the time matrix for healthy cells
-                                #"ts" is the time step for the model
-        IndexDead = numpy.where(cells == 'd')
+
+
+
+
+
+
+
+                        #"ut" is the univeral time matrix
+                        #"inf" is the time matrix for after infection phase
+                        #"ecl" is the time matrix for after eclipse phase
+                        #"th" is the time matrix for healthy cells
+                        #"cells" is the matrix of cells
+        IndexDead = numpy.where(cells == "d")
             #IndexDead is a list of arrays, in this case two arrays
         NumberDead = len(IndexDead[0])
-        numberDeadBefore = NumberDead
             #NumberDead is a number
+
 
 
 
@@ -730,48 +724,45 @@ for BigIndex in range(NumberOfRuns):
 
 
 
-        # if((timestepcount % Save) == 0):
 
-            # day = (timestepcount * timestep)//24
-            # progressInfo = str(Tc.BLUE + "{}\t\t " + Tc.GREEN + "{}\t\t " + Tc.YELLOW + "{}\t\t " + Tc.RED + "{}\t\t" + Tc.INFO + Tc.BOLD + "{}" + Tc.END).format(day, NumberHealthy, str(NumberEclipse) + "/" + str(NumberInfected), NumberDead, totalRegenerations)
-            # # clearCharacters = "\r%s" # Clears current line and overwrites with updates text
-            # clearCharacters = ""
-            # sys.stdout.write(clearCharacters + progressInfo)
 
-        # print("Hello {}".format(NumberHealthy), end = "\r")
+        if((timestepcount % Save) == 0):
+            tabLength = "\t\t"
+            # a simple fix to keep the numbers aligned with the table headers
+            if NumberHealthy >= 1000:
+                tabLength = "\t"
+            else:
+                tabLength = "\t\t"
 
-        print(Tc.BLUE,
-              int(timestepcount*timestep),"\t", Tc.GREEN,
-              str(NumberHealthy),"\t\t", Tc.YELLOW,
-              str(NumberEclipse),"\t\t",
-              str(NumberInfected),"\t\t", Tc.RED,
-              str(NumberDead),"\t\t", Tc.INFO,
-              str(totalRegenerations), Tc.END, end = "\r")
+            # should fully clear the line
+            print("                                                                                             ", end = "\r")
 
-        with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
-            print(int(timestepcount*timestep),",",
-                  str(NumberHealthy),",",
-                  str(NumberEclipse),",",
-                  str(NumberInfected),",",
-                  str(NumberDead),",",
-                  str(AmountOfVirus),",",
-                  str(totalRegenerations),",",
-                  file = outfile)
+            print(Tc.BLUE,
+                  int(timestepcount*timestep),"\t", Tc.GREEN,
+                  str(NumberHealthy), tabLength, Tc.YELLOW,
+                  str(NumberEclipse), tabLength,
+                  str(NumberInfected), tabLength, Tc.RED,
+                  str(NumberDead), tabLength, Tc.INFO,
+                  str(totalRegenerations), Tc.END, end = "\r")
+
+            with open(os.path.join(Path_to_Folder,"PerTimeStep.txt"),'a') as outfile:
+                print(int(timestepcount*timestep),",",
+                      str(NumberHealthy),",",
+                      str(NumberEclipse),",",
+                      str(NumberInfected),",",
+                      str(NumberDead),",",
+                      str(AmountOfVirus),",",
+                      str(totalRegenerations),",",
+                      file = outfile)
+
 
         ##########################################
         #   garbages unused/unreferenced memory  #
         ##########################################
         #progress bar
         # try:
-        #     # if((timestepcount%(24*int(1/timestep))) == 0):
-        #     #     print("Day ",(timestepcount * timestep)//24);
-        #     #     print(int(timestepcount * timestep),"\t",
-        #     #           str(NumberHealthy),"\t",
-        #     #           str(NumberEclipse),"\t",
-        #     #           str(NumberInfected),"\t",
-        #     #           str(NumberDead),"\t",
-        #     #           str(AmountOfVirus),"\t",
-        #     #           str(totalRegenerations))
+        #     if((timestepcount%(24*int(1/timestep))) == 0):
+        #         print("Day ",(timestepcount*timestep)//24);
         # except:
         #     "No Progress Bar"
 
@@ -804,4 +795,3 @@ for BigIndex in range(NumberOfRuns):
               file = outfile)
     print("BigIndex is ", BigIndex)
 print("DONE")
-

@@ -1,4 +1,0 @@
-Hexagon Side Length = 0.6666666666666666 
-Number of Layers = 7 
-Radius of Circle = 6.666666666666666 
-Number of Cells = 121
