@@ -4,7 +4,7 @@
 //#                                                                            #
 //##############################################################################
 
-// nvcc 1.6-CUDA-2DViralTransmission.cu -o program.out && ./program.out
+// nvcc 1.6-CUDA-2DViralTransmission.cu -o vt.out && ./vt.out
 // Working for all cell numbers?
 // Proper parameters
 // Two arrays for cells; one past, one present
