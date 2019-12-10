@@ -1,6 +1,6 @@
 # TCU Research Apprenticeship Program - Viral Model with regeneration
 
-## Running python version:
+## Running python simulation:
 **(works best in linux using anaconda 3.7)**
 
 Download/clone (and extract) this repository to any directory, the extracted directory will be referenced as `base/`
@@ -16,7 +16,7 @@ $ python3 2DProbabilityViralTransmission.py ***
 ```
 *** = the value passed through the command line as a parameter for cell regeneration
 
-## Running C (cuda) version:
+## Running C (cuda) simulation:
 
 Download/clone (and extract) to any directory, which will be referenced as `base/`
 
@@ -37,9 +37,10 @@ $ nvcc ViralTransmission v1.6.cu -o program.out && ./program.out
 You will need to adjust the parameters in `createGraphs.py` to match the parameters set in the simulation code, you can follow either of the below instruction sets to go about different ways of finding these values, but I highly recommend you start with the first set especially if you ran the python simulation as it is easier to follow, and all you need; however if you ran the C simulation you will still need to follow some of the steps outlined in #3.
 
 **2) Copy values from simulation code:**<br>
-<br>If you ran the python simulation, all of the values you need can be found near the top of the simulation programs in a section labeled "simulation parameters" (*73-81 in the python code, and lines 41-48 in the C code*). If you ran the C code most of the values can be found here, except for MOI which must be determined by using step 3.2.
+<br>If you ran the python simulation, all of the values you need can be found near the top of the simulation programs in a section labeled "simulation parameters" (*lines 73-81 in the python code, and lines 41-48 in the C code*). If you ran the C code most of the values can be found here, except for MOI which must be determined by using step 3.2.
 <br><br>
-**3) Find parameters for createGraphs.py based on the folders in ViralModel/ (Hard way): **<br><br>
+
+**3) Find parameters for createGraphs.py based on the folders in ViralModel/ (Hard way):** <br><br>
 An example of a folder name could look like this: `ViralModel/607_0-FREECELL_-2.0-MOI_0.01-RP/`
 * `NumberOfLayers` can be determined by the first value, `607`.
 
