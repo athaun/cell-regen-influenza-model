@@ -78,12 +78,12 @@ endtime = 365*24   # Days in hours, Need 7 daysrunParameter = float(sys.argv[1])
 Save = (1/timestep) #the number of time the program saves to file, (1/timestep) results in 1 save very simulated hour
 NumberOfLayers = 7 #193 #607 is a million hexagons in a circle
 NumberOfRuns = 2
+MOI = 10**(moiTo) #(10**-5) to 1
 
 ################################################################################
 #    Physical Parameters
 ################################################################################
 moiTo = -2
-MOI = 10**(moiTo) #(10**-5) to 1
 beta = 2.0
 rho = 562800
 D = 6*10**(-12)

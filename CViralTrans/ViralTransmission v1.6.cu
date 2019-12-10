@@ -6,6 +6,15 @@
 
 // nvcc ViralTransmission v1.6.cu -o program.out && ./program.out
 
+/**
+NOTES:
+- figure out multithreaded aprocch for the values of regeneration
+- maybe do ^^^ for MOI???
+- is modifiedCerialViralTransmission() the same as cerialViralTransmission(), and if so is the former necessary?
+- is the __kernal code the cudo equivalent of cerialViralTransmission()?
+- what is 'o' as a "phase"
+*/
+
 /** Imports */
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +37,7 @@ using namespace std;
 // Globals to setup the kernals
 dim3 BlockConfig, GridConfig;
 
-// Simulation Parametersf
+// Simulation Parameters
 int CELL2CELL = 1;
 int FREECELL = 0;
 float timestep = 0.005;    // Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1 / 3600) hr = 1 sec
@@ -57,6 +66,7 @@ float probi = 0.2;  // Probability per unit time of cell to cell infection (/hou
 
 double[6] regenValues = {0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0}; // must always contain .0 even if it is an integer value
 int totalRegenerations = 0;
+double runParameter;
 
 //Global Variables
 char Path_to_Folder[100] = "";
@@ -71,6 +81,7 @@ float* inf_GPU;
 float* vtemp;
 float* vtemp_GPU;
 float* th;
+float* timeDead;
 float* th_GPU;
 float* ut;
 float* ut_GPU;
@@ -125,17 +136,13 @@ float PU1() {
     return distribution(generator);
 }
 
-float exponentialDistro () {
+float exponentialDistro (double mean) {
 
     /**
       generates random distribution based off of parameter passed from command line
       (either by individual test run or by multithread.sh)
     */
-
-    if (runParameter == 10000.0) { // the initial number assigned to runParameter, if no command line argument was passed, it will still be 10000.0
-      printf("[WARNING] no parameter passed from command line, defaulting to 1.0");
-      runParameter = 1.0;
-    }
+    runParameter = mean;
 
     random_device rd;
     default_random_engine generator(rd());
@@ -144,12 +151,10 @@ float exponentialDistro () {
     return distribution(generator);
 }
 
-
-
 void creatingPathToFolderAndDirectory(int BigIndex, int NumberOfLayers, float MOI) {
     char TransmissionType[10] = "";
     if (CELL2CELL == 1) {
-		if (FREECELL == 1) {
+		    if (FREECELL == 1) {
             strcat(TransmissionType,"Both");
         } else {
             strcat(TransmissionType,"CELL2CELL");
@@ -364,6 +369,8 @@ void allocateMemory(int Nx, int Ny) {
     //Produces a time matrix hor healthy cells (t)
     th = (float*) malloc(Nx * Ny * sizeof(float));
 
+    timeDead = (float*) malloc(Nx * Ny * sizeof(float)); // ---
+
     //Produces an array of eclipse phase durations for cells
     EclipsePhaseLength = (float*) malloc(Nx * Ny * sizeof(float));
     //Produces an array of infection phase durations for cells
@@ -382,6 +389,7 @@ void initailConditions(int Nx, int Ny) {
             ecl[i + Nx * j] = 0.0;
             inf[i + Nx * j] = 0.0;
             th[i + Nx * j] = 0.0;
+            timeDead[i + Nx * j] = 0.0; // ---
             EclipsePhaseLength[i + Nx * j] = Te(TauE,ne);
             InfectionPhaseLength[i + Nx * j]  = Ti(TauI,ni);
        }
@@ -404,7 +412,7 @@ void infectANumberOfCellsRandomly(int Nx, int Ny, int Ni) {
             if ((cells[randx + Nx * randy + Nx * Ny * 0] != 'o') && (cells[randx + Nx * randy + Nx * Ny * 0] == 'h')) {
                 cells[randx + Nx * randy + Nx * Ny * 0] = 'e';
                 cells[randx + Nx * randy + Nx * Ny * 1] = 'e';
-                NumberOfInfectedCellsCount = NumberOfInfectedCellsCount + 1;
+                NumberOfInfectedCellsCount ++;
             }
         }
     }
@@ -488,61 +496,77 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         float te = Te(TauE,ne);
         float ti = Ti(TauI, ni);
 
-        //The Healthy Cells' time
+        /**
+          Healthy cells time
+        */
+
         int NumberHealthy = 0;
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'h') {
+                    // find the number of healthy cells within the array cells[], and adds them to NumberHealthy
                     NumberHealthy = NumberHealthy + 1;
                 }
             }
         }
+
         int** LocationHealthy;
         LocationHealthy = (int**) malloc(NumberHealthy * sizeof(int*));
         for (int i = 0; i < NumberHealthy; i ++) {
            LocationHealthy[i] = (int*) malloc(2 * sizeof(int));
+           // find the X and Y locations of healthy cells, and add them to LocationHealthy[]
         }
+
         int Indexer = 0;
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'h') {
                     LocationHealthy[Indexer][0] = i;
                     LocationHealthy[Indexer][1] = j;
-                    Indexer = Indexer + 1;
+                    Indexer ++;
                 }
             }
         }
+
         if (NumberHealthy != 0) {
             int Row;
             int Column;
             for (int j = 0; j < NumberHealthy; j ++) {
                 Row = LocationHealthy[j][0];
                 Column = LocationHealthy[j][1];
-//                    Row is the row location of for a cell
-//                    Column is the column location for a cell
-                th[Row + Nx * Column] = th[Row + Nx * Column] + timestep;
-//                    "th" is the time matrix for healthy cells
-//                    "ts" is the time step for the model
+                // Row is the row location of for a cell
+                // Column is the column location for a cell
+                th[Row + Nx * Column] += timestep;
+                // "th" is the time matrix for healthy cells
+                // "ts" is the time step for the model
             }
         }
         for (int i = 0; i < NumberHealthy; i++) {
            free(LocationHealthy[i]);
         }
         free(LocationHealthy);
-        //Eclipse phase -> Infection
+
+        /**
+          Eclipse phase -> Infection
+        */
+
         int NumberEclipse = 0;
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'e') {
-                    NumberEclipse = NumberEclipse + 1;
+                    // find the number of cells in eclipse phase within the array cells[], and adds them to NumberEclipse
+                    NumberEclipse ++;
                 }
             }
         }
+
         int** LocationEclipse;
         LocationEclipse = (int**) malloc(NumberEclipse * sizeof(int*));
         for (int i = 0; i < NumberEclipse; i ++) {
            LocationEclipse[i] = (int*) malloc(2 * sizeof(int));
+           // find the X and Y locations of eclipse cells, and add them to LocationEclipse[]
         }
+
         Indexer = 0;
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
@@ -557,11 +581,9 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         if (NumberEclipse != 0) {
             int Row;
             int Column;
-            for (int j = 0; j<NumberEclipse; j ++) {
+            for (int j = 0; j < NumberEclipse; j ++) {
                 Row = LocationEclipse[j][0];
                 Column = LocationEclipse[j][1];
-                // Row is the row location of for a cell
-                // Column is the column location for a cell
                 if ((ecl[Row + Nx * Column] + th[Row + Nx * Column]) < ut[Row + Nx * Column]) {
                     cells[Row + Nx * Column + Nx * Ny * 1] = 'i';
                     inf[Row + Nx * Column] = inf[Row + Nx * Column] + ti;//Ti(TauI, ni);
@@ -579,30 +601,36 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         }
         free(LocationEclipse);
 
-        //Infection spreads
+        /**
+          Infection spreads
+        */
+
         if (cell2cell == 1) {
+
             int NumberInfected = 0;
-            for (int j = 0; j < Ny; j++) {
+            for (int j = 0; j < Ny; j ++) {
                 for (int i = 0; i < Nx; i++) {
                     if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
-                        NumberInfected = NumberInfected + 1;
+                        // find the number of infected cells within the array cells[], and adds them to NumberInfected
+                        NumberInfected ++;
                     }
                 }
             }
 
             int** LocationInfected;
             LocationInfected = (int**) malloc(NumberInfected * sizeof(int*));
-
-            for (int i = 0; i<NumberInfected; i++) {
+            for (int i = 0; i < NumberInfected; i ++) {
                LocationInfected[i] = (int*) malloc(2 * sizeof(int));
+               // find the X and Y locations of eclipse cells, and add them to LocationEclipse[]
             }
+
             int Indexer = 0;
-            for (int j = 0; j < Ny; j++) {
-                for (int i = 0; i < Nx; i++) {
+            for (int j = 0; j < Ny; j ++) {
+                for (int i = 0; i < Nx; i ++) {
                     if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
                         LocationInfected[Indexer][0] = i;
                         LocationInfected[Indexer][1] = j;
-                        Indexer = Indexer + 1;
+                        Indexer ++;
                     }
                 }
             }
@@ -611,11 +639,9 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
             if (NumberInfected != 0) {
                 int Row;
                 int Column;
-                for (int j = 0; j<NumberInfected; j++) {
+                for (int j = 0; j < NumberInfected; j ++) {
                     Row = LocationInfected[j][0];
                     Column = LocationInfected[j][1];
-                    // #Row is the row location of for a cell
-                    // #Column is the column location for a cell
 
                     int AboveRowExists = 1;
                     int LeftColumnExists = 1;
@@ -648,7 +674,7 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
                         RightColumn = 0;
                     }
 
-                    if (PU1()<probi * timestep) {
+                    if (PU1() < probi * timestep) {
                         if ((LeftColumnExists == 1) && (cells[Row + Nx * LeftColumn + Nx * Ny * 0] != 'o')) {
                             if (cells[Row + Nx * LeftColumn + Nx * Ny * 0] == 'h') {
                                 cells[Row + Nx * LeftColumn + Nx * Ny * 1] = 'e';
@@ -700,12 +726,18 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
             free(LocationInfected);
         }
 
+        /********************************************
+
+          What is 'o'?
+
+        ********************************************/
+
         //Virus Spreads
         int NumberVirus = 0;
-        for (int j = 0; j<Ny; j++) {
-            for (int i = 0; i<Nx; i++) {
+        for (int j = 0; j < Ny; j ++) {
+            for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] != 'o') {
-                    NumberVirus = NumberVirus + 1;
+                    NumberVirus ++;
                 }
             }
         }
@@ -718,11 +750,11 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         }
         Indexer = 0;
         for (int j = 0; j < Ny; j ++) {
-            for (int i = 0; i < Nx; i++) {
+            for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] != 'o') {
                     LocationVirus[Indexer][0] = i;
                     LocationVirus[Indexer][1] = j;
-                    Indexer = Indexer + 1;
+                    Indexer ++;
                 }
             }
         }
@@ -802,10 +834,10 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
                 float probaility = PU1();
                 float adaptedtimestep = timestep; //variable time step
                 float adaptedtimestepcount = 1.0;
-                float pinfect = vtemp[Row + Nx * Column + Nx * Ny * 1]*beta * adaptedtimestep;
+                float pinfect = vtemp[Row + Nx * Column + Nx * Ny * 1] * beta * adaptedtimestep;
                 while(pinfect > 1.0) {
                     adaptedtimestep = adaptedtimestep / 2.0;
-                    pinfect = vtemp[Row + Nx * Column + Nx * Ny * 1]*beta * adaptedtimestep;
+                    pinfect = vtemp[Row + Nx * Column + Nx * Ny * 1] * beta * adaptedtimestep;
                     adaptedtimestepcount = adaptedtimestepcount * 2.0;
                 }
                 if (pinfect <= 1.0) {
@@ -841,30 +873,34 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         }
         free(LocationVirus);
 
-        //kills cells
+        /**
+          kills cells
+        */
+
         int NumberInfected = 0;
-        for (int j = 0; j<Ny; j++) {
-            for (int i = 0; i<Nx; i++) {
+        for (int j = 0; j < Ny; j ++) {
+            for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
-                    NumberInfected = NumberInfected + 1;
+                    // find the number of infected cells within the array cells[], and adds them to NumberInfected
+                    NumberInfected ++;
                 }
             }
         }
 
         int** LocationInfected;
         LocationInfected = (int**) malloc(NumberInfected * sizeof(int*));
-
         for (int i = 0; i < NumberInfected; i ++) {
            LocationInfected[i] = (int*) malloc(2 * sizeof(int));
+           // find the X and Y locations of infected cells, and add them to LocationInfected[]
         }
-        Indexer = 0;
 
+        Indexer = 0;
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
                     LocationInfected[Indexer][0] = i;
                     LocationInfected[Indexer][1] = j;
-                    Indexer = Indexer + 1;
+                    Indexer ++;
                 }
             }
         }
@@ -896,8 +932,8 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
         }
         free(LocationInfected);
 
-        for (int j = 0; j<Ny; j ++) {
-            for (int i = 0; i<Nx; i ++) {
+        for (int j = 0; j < Ny; j ++) {
+            for (int i = 0; i < Nx; i ++) {
                 vtemp[i + Nx * j + Nx * Ny * 0] = vtemp[i + Nx * j + Nx * Ny * 1];
                 cells[i + Nx * j + Nx * Ny * 0] = cells[i + Nx * j + Nx * Ny * 1];
             }
@@ -912,6 +948,10 @@ void cerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
 }
 
 void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
+        /**
+          Is regular CelrialViralTransmission even needed... why both? Are they actually the same?
+        */
+
         float te = Te(TauE,ne);
         float ti = Ti(TauI, ni);
 
@@ -923,16 +963,16 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
         for (int j = 0; j < Ny; j ++) {
             for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'h') {
-                    NumberHealthy = NumberHealthy + 1;
+                    NumberHealthy ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'e') {
-                    NumberEclipse = NumberEclipse + 1;
+                    NumberEclipse ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
-                    NumberInfected = NumberInfected + 1;
+                    NumberInfected ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] != 'o') {
-                    NumberVirus = NumberVirus + 1;
+                    NumberVirus ++;
                 }
             }
         }
@@ -958,72 +998,69 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
            LocationVirus[i] = (int*) malloc(2 * sizeof(int));
         }
 
-        int IndexerH = 0;
-        int IndexerE = 0;
-        int IndexerI = 0;
-        int IndexerO = 0;
-        for (int j = 0; j<Ny; j++) {
-            for (int i = 0; i<Nx; i++) {
+        int IndexerH = 0, IndexerE = 0, IndexerI = 0, IndexerO = 0; // --
+        for (int j = 0; j < Ny; j ++) {
+            for (int i = 0; i < Nx; i ++) {
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'h') {
                     LocationHealthy[IndexerH][0] = i;
                     LocationHealthy[IndexerH][1] = j;
-                    IndexerH = IndexerH + 1;
+                    IndexerH ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'e') {
                     LocationEclipse[IndexerE][0] = i;
                     LocationEclipse[IndexerE][1] = j;
-                    IndexerE = IndexerE + 1;
+                    IndexerE ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] == 'i') {
                     LocationInfected[IndexerI][0] = i;
                     LocationInfected[IndexerI][1] = j;
-                    IndexerI = IndexerI + 1;
+                    IndexerI ++;
                 }
                 if (cells[i + Nx * j + Nx * Ny * 0] != 'o') {
                     LocationVirus[IndexerO][0] = i;
                     LocationVirus[IndexerO][1] = j;
-                    IndexerO = IndexerO + 1;
+                    IndexerO ++;
                 }
             }
         }
 
-        //The Healthy Cells' time
+        /**
+          The Healthy Cells' time
+        */
+
         if (NumberHealthy != 0) {
             int Row;
             int Column;
-            for (int j = 0; j<NumberHealthy; j++) {
+            for (int j = 0; j < NumberHealthy; j ++) {
                 Row = LocationHealthy[j][0];
                 Column = LocationHealthy[j][1];
-//                    Row is the row location of for a cell
-//                    Column is the column location for a cell
-                th[Row + Nx * Column] = th[Row + Nx * Column] + timestep;
-//                    "th" is the time matrix for healthy cells
-//                    "ts" is the time step for the model
+                th[Row + Nx * Column] += timestep;
+                // "th" is the time matrix for healthy cells
+                // "ts" is the time step for the model
             }
         }
+        /**
+          Eclipse phase -> Infection
+        */
 
-        //Eclipse phase -> Infection
         if (NumberEclipse != 0) {
             int Row;
             int Column;
             for (int j = 0; j<NumberEclipse; j++) {
                 Row = LocationEclipse[j][0];
                 Column = LocationEclipse[j][1];
-//                    Row is the row location of for a cell
-//                    Column is the column location for a cell
+
                 if ((ecl[Row + Nx * Column] + th[Row + Nx * Column]) < ut[Row + Nx * Column]) {
                     cells[Row + Nx * Column + Nx * Ny * 1] = 'i';
-                    inf[Row + Nx * Column] = inf[Row + Nx * Column] + ti;//Ti(TauI, ni);
-//                        "ecl" is the time matrix for after eclipse phase
-//                        "th" is the time matrix for healthy cells
-//                        "ut" is the univeral time matrix
-//                        "cells" is the matrix of cells
-//                        "inf" is the time matrix for after infection phase
+                    inf[Row + Nx * Column] = inf[Row + Nx * Column] + ti; // Ti(TauI, ni);
                 }
             }
         }
 
-        //Infection spreads
+        /**
+          Infection spreads
+        */
+
         if (cell2cell == 1) {
             if (NumberInfected != 0) {
                 int Row;
@@ -1031,35 +1068,33 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
                 for (int j = 0; j<NumberInfected; j++) {
                     Row = LocationInfected[j][0];
                     Column = LocationInfected[j][1];
-//                        #Row is the row location of for a cell
-//                        #Column is the column location for a cell
 
                     int AboveRowExists = 1;
                     int LeftColumnExists = 1;
                     int BelowRowExists = 1;
                     int RightColumnExists = 1;
 
-                    int AboveRow = Row - 1;   //row coordinate above cell
-                    int LeftColumn = Column - 1;   //column coordinate left of cell
-                    int BelowRow = Row + 1;   //row coordinate below cell
-                    int RightColumn = Column + 1;   //column coordinate right of cell
+                    int AboveRow = Row - 1;        // row coordinate above cell
+                    int LeftColumn = Column - 1;   // column coordinate left of cell
+                    int BelowRow = Row + 1;        // row coordinate below cell
+                    int RightColumn = Column + 1;  // column coordinate right of cell
 
-//                    if the cell one row up doesn't exist, it's taken out of the equation
+                    // if the cell one row up doesn't exist, it's taken out of the equation
                     if (AboveRow < 0) {
                         AboveRowExists = 0;
                         AboveRow = 0;
                     }
-//                    if the cell one column to the left doesn't exist, it's taken out of the equation
+                    // if the cell one column to the left doesn't exist, it's taken out of the equation
                     if (LeftColumn < 0) {
                         LeftColumnExists = 0;
                         LeftColumn = 0;
                     }
-//                    if the cell one row down doesn't exist, it's taken out of the equation
+                    // if the cell one row down doesn't exist, it's taken out of the equation
                     if (BelowRow > Ny - 1) {
                         BelowRowExists = 0;
                         BelowRow = 0;
                     }
-//                    if the cell one column to the right doesn't exist, it's taken out of the equation
+                    // if the cell one column to the right doesn't exist, it's taken out of the equation
                     if (RightColumn > Nx - 1) {
                         RightColumnExists = 0;
                         RightColumn = 0;
@@ -1112,19 +1147,20 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
             }
         }
 
-        //Virus Spreads
+        /**
+          Virus Spreads
+        */
+
         int Row;
         int Column;
         for (int j = 0; j < NumberVirus; j ++) {
             Row = LocationVirus[j][0];
             Column = LocationVirus[j][1];
-            // Row is the row location of for a cell
-            // Column is the column location for a cell
 
-            int AboveRow = Row - 1;   //row coordinate above cell
-            int LeftColumn = Column - 1;   //column coordinate left of cell
-            int BelowRow = Row + 1;   //row coordinate below cell
-            int RightColumn = Column + 1;   //column coordinate right of cell
+            int AboveRow = Row - 1;
+            int LeftColumn = Column - 1;
+            int BelowRow = Row + 1;
+            int RightColumn = Column + 1;
 
             float rho2;
             if (cells[Row + Nx * Column + Nx * Ny * 0] == 'i') {
@@ -1222,7 +1258,9 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
             }
         }
 
-        //kills cells
+        /**
+          kills cells
+        */
         if (NumberInfected != 0) {
             int Row;
             int Column;
@@ -1236,11 +1274,6 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
                     if (CODETESTINGCONDITIONS == 1) {
                         cells[Row + Nx * Column + Nx * Ny * 1] = 'i';
                     }
-                    // "ut" is the univeral time matrix
-                    // "inf" is the time matrix for after infection phase
-                    // "ecl" is the time matrix for after eclipse phase
-                    // "th" is the time matrix for healthy cells
-                    // "cells" is the matrix of cells
                 }
             }
         }
@@ -1473,6 +1506,11 @@ __device__ float PU_GPU(curandState *state) {
 
 __global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *inf, float *th,  float *epl, float *ipl, systemConstantsStruct constant, int cell2cell, int freecell, curandState *state, int NumberOfLayers) {
 
+    /**
+
+      Is this the GPU version of cerialViralTransmission()/modifiedCerialViralTransmission() above?
+
+    */
     int Row = threadIdx.x + blockIdx.x * blockDim.x;
     int Column =  threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -1481,11 +1519,11 @@ __global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *
     int NXNY = NX * NY;
 
     if ((cells[Row + NX * Column + NXNY * 0] != 'o') && (Row + NX * Column + NXNY < 2 * NXNY)) {
-        //Virus Spreads
-        int AboveRow = Row - 1;   //row coordinate above cell
-        int LeftColumn = Column - 1;   //column coordinate left of cell
-        int BelowRow = Row + 1;   //row coordinate below cell
-        int RightColumn = Column + 1;   //column coordinate right of cell
+        // Virus Spreads
+        int AboveRow = Row - 1;
+        int LeftColumn = Column - 1;
+        int BelowRow = Row + 1
+        int RightColumn = Column + 1
 
         float rho2;
         if (cells[Row + NX * Column + NXNY * 0] == 'i') {
@@ -1494,21 +1532,21 @@ __global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *
         else {
             rho2 = 0;
         }
-//          where rho2 is a placeholder variable
+        // where rho2 is a placeholder variable
 
-//          if the cell one row up doesn't exist, it's taken out of the equation
+        // if the cell one row up doesn't exist, it's taken out of the equation
         if (AboveRow < 0) {
             AboveRow = Row;
         }
-//          if the cell one column to the left doesn't exist, it's taken out of the equation
+        // if the cell one column to the left doesn't exist, it's taken out of the equation
         if (LeftColumn < 0) {
             LeftColumn = Column;
         }
-//          if the cell one row down doesn't exist, it's taken out of the equation
+        // if the cell one row down doesn't exist, it's taken out of the equation
         if (BelowRow > (NY - 1)) {
             BelowRow = Row;
         }
-//          if the cell one column to the right doesn't exist, it's taken out of the equation
+        // if the cell one column to the right doesn't exist, it's taken out of the equation
         if (RightColumn > (NX - 1)) {
             RightColumn = Column;
         }
@@ -1671,10 +1709,16 @@ int main(void) {
 
     // float MOI[6] = {powf(10,0), powf(10,-1), powf(10,-2), powf(10,-3), powf(10,-4), powf(10,-5)};
     float MOI[1] = {powf(10,-2)};
-
-    for (int q = 0; q < (sizeof(MOI) / sizeof(MOI[0])); q ++) {
-        //Loop For The number Of Simulations To Run Per Setting
+    for(int a = 0; a < sizeof(regenValues)/sizeof(regenValues[0]); a ++) {
+        // run the test as many times as necessary to get through all of the regen parameters
+        for (int q = 0; q < (sizeof(MOI) / sizeof(MOI[0])); q ++) {
+        // run the test as many times as necessary to get through all of the MOI values for each regen parameter
         for (int BigIndex = 0; BigIndex < NumberOfRuns; BigIndex ++) {
+            // run the test as many times as necessary to get through all of the regen parameters, MOI values, and runs defined in NumberOfRuns
+
+            /**
+              Figure out multithreaded aproach for regen values?
+            */
 
             printf("\nStarting run %d\n", (BigIndex + 1));
 
@@ -1839,6 +1883,7 @@ int main(void) {
 
             freeMemory();
         }
+    }
     }
     printf("PROGRAM DONE\n");
 }
