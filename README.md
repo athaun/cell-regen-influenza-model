@@ -1,5 +1,15 @@
 # TCU Research Apprenticeship Program - Viral Model with regeneration
 
+## Running C (cuda) simulation:
+
+Download/clone (and extract) to any directory, which will be referenced as `base/`
+
+cd to ```base/CViralTrans/viralTransv1.8```
+run:
+```bash
+$ nvcc ViralTransmission.cu -o program.out && ./program.out
+```
+
 ## Running python simulation:
 **(works best in linux using anaconda 3.7)**
 
@@ -15,16 +25,6 @@ to run an individual test, cd to ```base/pythonViralTrans/``` and run
 $ python3 2DProbabilityViralTransmission.py ***
 ```
 *** = the value passed through the command line as a parameter for cell regeneration
-
-## Running C (cuda) simulation:
-
-Download/clone (and extract) to any directory, which will be referenced as `base/`
-
-cd to ```base/CViralTrans/```
-run:
-```bash
-$ nvcc ViralTransmission v1.6.cu -o program.out && ./program.out
-```
 
 ## Creating graphs:
 ### To create graphs of the simulation over time, including healthy cells vs time, virus vs time, dead cells vs time, and more, follow the instructions below.
