@@ -1,14 +1,19 @@
-# TCU Research Apprenticeship Program - Viral Model with regeneration
+# Investigating the Effects of Cellular regeneration Using an Agent-Based Model
+### TCU Research Apprenticeship Program
 
-## Running C (cuda) simulation:
+Treating viruses and infections is important for the general welfare. Everyone gets sick and illness negatively affects all aspects of life. Most viral infections can last for weeks, even influenza (the flu). During infections, healthy cells can grow in order to replenish the cells dying from the virus. Past viral models, especially those for influenza, tend to ignore cellular regeneration – even when it occurs in short duration infections like the flu. This research accounts for cellular regeneration, using an agent-based framework, and varies the regeneration rate in order to understand how this regeneration affects viral infections. The model used represents virus infections and spread in a two-dimensional layer of cells in order to generate total virus over time graphs for corresponding regeneration rates.
+
+## Running C simulation:
+Note: The cuda version of this simulation works, but does not include cellular regeneration yet.
 
 Download/clone (and extract) to any directory, which will be referenced as `base/`
 
 cd to ```base/CViralTrans/viralTransv1.8```
 run:
 ```bash
-$ nvcc ViralTransmission.cu -o program.out && ./program.out
+$ nvcc ViralTransmission.cu -o program.out && ./program.out ***
 ```
+*** = the value passed through the command line as a parameter for cell regeneration
 
 ## Running python simulation:
 **(works best in linux using anaconda 3.7)**

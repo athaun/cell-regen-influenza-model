@@ -5,7 +5,7 @@
 void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float MOI) {
     char TransmissionType[10] = "";
     if (CELL2CELL == 1) {
-		    if (FREECELL == 1) {
+        if (FREECELL == 1) {
             strcat(TransmissionType,"Both");
         } else {
             strcat(TransmissionType,"CELL2CELL");
@@ -58,7 +58,7 @@ void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float M
     }
 }
 
-void printInitialConditions (int SideLength, int RadiusOfCircle) {
+void printInitialConditions (int SideLength, int RadiusOfCircle, float regenParameter) {
   char File1[100] = "";
   strcat(File1,Path_to_Folder);
   strcat(File1,"/InitialCellLocations.txt");
@@ -89,6 +89,15 @@ void printInitialConditions (int SideLength, int RadiusOfCircle) {
   fprintf(outfile2, "Radius of Circle = %f\n", RadiusOfCircle);
   fprintf(outfile2, "Number of Cells = %d\n", NumberOfCells);
   fclose(outfile2);
+
+  printf("\033[95mHexagon Side Length = %f\n", SideLength);
+  printf("Number of Layers = %d\n", NumberOfLayers);
+  printf("Radius of Circle = %f\n", RadiusOfCircle);
+  printf("Number of Cells = %d\n", NumberOfCells);
+  printf("Exponential Distro = %f\n", regenParameter);
+  printf("MOI = %d\n", MOI);
+  printf("Saved to: %s\n\n\033[0m", Path_to_Folder);
+
 }
 
 void printToFileCellAndVirusInitial (int Nx, int Ny, int NumberOfLayers) {
@@ -159,7 +168,7 @@ void printToFileCellAndVirusAnalysisInitial (int Nx, int Ny) {
         exit(0);
     }
 
-    fprintf(outfile9,"%0.0f, %d, %d, %d, %d, %f,", 0.0, NumberHealthy1, NumberEclipse1, NumberInfected1, NumberDead1, AmountOfVirus);
+    fprintf(outfile9,"%0.0f, %d, %d, %d, %d, %f, %d", 0.0, NumberHealthy1, NumberEclipse1, NumberInfected1, NumberDead1, AmountOfVirus, totalRegenerations);
     fprintf(outfile9,"\n");
 
     fclose(outfile9);
@@ -208,8 +217,8 @@ void printToFileCellAndVirusAnalysis (float timestep) {
         printf("Error opening file!\n");
         exit(0);
     }
-
-    fprintf(outfile8,"%0.0f, %d, %d, %d, %d, %f,", timestep + 1, NumberHealthy1, NumberEclipse1, NumberInfected1, NumberDead1, AmountOfVirus);
+    /** why is it timestep + 1, and why wasn't it dvided by 24 */
+    fprintf(outfile8,"%0.0f, %d, %d, %d, %d, %f, %d", timestep + 1, NumberHealthy1, NumberEclipse1, NumberInfected1, NumberDead1, AmountOfVirus, totalRegenerations);
     fprintf(outfile8,"\n");
 
     fclose(outfile8);

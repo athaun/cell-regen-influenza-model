@@ -4,8 +4,31 @@
 
 */
 
+/** Imports */
+#include <stdio.h>
+#include <stdlib.h>
+#include "cuda.h"
+#include <curand_kernel.h>
+#include <time.h>
+#include <ctime>
+#include <math.h>
+#include <random>
+
+#include <iomanip>
+#include <map>
+
+#include <iostream>
+#include <thread>
+
 /** Mehods */
+// extern double regenParameter;
+
+void creatingCellLocations();
+
+void runSimulation(float regenParameter);
+
 void deviceSetupAndMemoryAllocation(int Nx, int Ny);
+
 float Te(float TauE, float ne);
 
 float Ti(float TauI, float ni);
@@ -16,7 +39,11 @@ float exponentialDistro (double mean);
 
 void errorCheck(const char *message);
 
-void printInitialConditions(int SideLength, int RadiusOfCircle);
+void printInitialConditions(int SideLength, int RadiusOfCircle, float regenParameter);
+
+void freeMemory();
+
+using namespace std;
 
 /** variables and constants **/
 #define PI 3.1415926535897932f
@@ -42,24 +69,27 @@ extern int NumberOfRuns;
 
 // Physical Parameters
 // float MOI = pow(10,0); //pow(10,-5) to 1
-extern float beta;
-extern float rho;
-extern float D;
-extern float c;
-extern float deltx;
-extern float deltxprime;
-extern float Dtsx2;
+extern float MOI[1];
+extern float beta; // infection rate
+extern float rho; // production rate
+extern float D; // diffusion coefficient
+extern float c; // clearance rate (virus death rate)
+extern float deltx; // timestep for diffusion
+extern float deltxprime; // part of diffusion "scheme"
+extern float Dtsx2; // part of diffusion "scheme"
 
 // Probability Constants
-extern float TauI;
-extern float TauE;
-extern float ne;
-extern float ni;
-extern float probi;
+extern float TauI; // avg time cell stays infected
+extern float TauE; // avg time cell stays in eclipse stage
+extern float ne; // number of eclipse compartments
+extern float ni; // number of infected compartments
+extern float probi; // Probability per unit time of cell to cell infection (/hour)
 
 extern double regenValues[];
 extern int totalRegenerations;
 extern double runParameter;
+extern double regenParameter;
+extern bool regensAllowed;
 
 //Global Variables
 extern char Path_to_Folder[100];
@@ -92,3 +122,9 @@ extern int NumberHealthy1;
 extern float AmountOfVirus;
 
 extern curandState *state;
+
+extern int NumberHealthy;
+extern int NumberEclipse;
+extern int NumberInfected;
+extern int NumberDead;
+extern int NumberVirus;

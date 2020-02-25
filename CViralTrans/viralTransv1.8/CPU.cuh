@@ -5,15 +5,27 @@
 
 void creatingCellLocations() {
     float SideLength = (2.0 / 3.0);
-
     int RadiusScale = 0;
+    for (int i = 0; i < NumberOfLayers; i ++) {
+        if (i == 0) {
+            RadiusScale ++;
+        } else {
+            if ((i) % 2 == 1) {
+                RadiusScale ++;
+            } else {
+                RadiusScale += 2;
+            }
+        }
+    }
+
+    float RadiusOfCircle = SideLength * RadiusScale;
+
     int count = 0;
     for (int i = 0; i < NumberOfLayers; i ++) {
-        RadiusScale ++;
-        count ++;
+        count += i;
     }
-    float RadiusOfCircle = SideLength * RadiusScale;
-    int NumberOfHexagons = count * 6 + 1;
+    int NumberOfHexagons = (count) * 6 + 1;
+
 
     float** coord;
     int n = NumberOfHexagons;
@@ -25,6 +37,7 @@ void creatingCellLocations() {
 
     float** percyclecoord;
     n = NumberOfHexagons;
+    // n = NumberOfLayers;
     m = 3;
     percyclecoord = (float**) calloc(n, sizeof(float*));
     for (int i = 0; i < n; i++) {
@@ -37,6 +50,9 @@ void creatingCellLocations() {
             if (i < j) {
                 temp = i;
             }
+            /**
+              alocating memory to percyclecoord based on n, but looping based on NumberOfLayers, n = numberOfHexagons.
+            */
             percyclecoord[i + (j - 1) * j + 1][0] =  -temp - 1;
             percyclecoord[i + (j - 1) * j + 1][1] =   temp + j - i;
             percyclecoord[i + (j - 1) * j + 1][2] =  -j + 1 + i;
@@ -95,7 +111,7 @@ void creatingCellLocations() {
         }
     }
 
-    printInitialConditions(SideLength, RadiusOfCircle);
+    printInitialConditions(SideLength, RadiusOfCircle, regenParameter);
 
     for (int i = 0; i < NumberOfHexagons; i++) {
        free(coord[i]);
@@ -157,80 +173,113 @@ void infectRandomCells(int Nx, int Ny, int Ni) {
     }
 }
 
-void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell) {
+int NumberHealthy = 0;
+int NumberEclipse = 0;
+int NumberInfected = 0;
+int NumberDead = 0;
+int NumberVirus = 0;
 
-        float te = Te(TauE,ne);
-        float ti = Ti(TauI, ni);
+int** LocationHealthy;
+int** LocationEclipse;
+int** LocationInfected;
+int** LocationDead;
+int** LocationVirus;
 
-        int NumberHealthy = 0;
-        int NumberEclipse = 0;
-        int NumberInfected = 0;
-        int NumberVirus = 0;
+void findCellTypeLocationsAndCount(int Nx, int Ny) {
+    for (int y = 0; y < Ny; y ++) {
+        for (int x = 0; x < Nx; x ++) {
+            switch (cells[x + Nx * y + Nx * Ny * 0]) { // why multiply by 0?
+              case 'h':
+                NumberHealthy ++;
+                break;
+              case 'e':
+                NumberEclipse ++;
+                break;
+              case 'i':
+                NumberInfected ++;
+                break;
+              case 'd':
+                NumberDead ++;
+                break;
+              default:
 
-        for (int y = 0; y < Ny; y ++) {
-            for (int x = 0; x < Nx; x ++) {
-                switch (cells[x + Nx * y + Nx * Ny * 0]) { // why multiply by 0?
-                  case 'h':
-                    NumberHealthy ++;
-                    break;
-                  case 'e':
-                    NumberEclipse ++;
-                    break;
-                  case 'i':
-                    NumberInfected ++;
-                    break;
-                  case 'o':
-                    NumberVirus ++;
-                    break;
-                }
+                break;
+            }
+            if (cells[x + Nx * y + Nx * Ny * 0] != 'o') {
+                NumberVirus ++;
             }
         }
+    }
 
-        int** LocationHealthy = (int**) malloc(NumberHealthy * sizeof(int*));
-        int** LocationEclipse = (int**) malloc(NumberEclipse * sizeof(int*));
-        int** LocationInfected = (int**) malloc(NumberInfected * sizeof(int*));
-        int** LocationVirus = (int**) malloc(NumberVirus * sizeof(int*));
+    LocationHealthy = (int**) malloc(NumberHealthy * sizeof(int*));
+    LocationEclipse = (int**) malloc(NumberEclipse * sizeof(int*));
+    LocationInfected = (int**) malloc(NumberInfected * sizeof(int*));
+    LocationDead = (int**) malloc(NumberDead * sizeof(int*));
+    LocationVirus = (int**) malloc(NumberVirus * sizeof(int*));
 
-        for (int i = 0; i < NumberHealthy; i ++) {
-           LocationHealthy[i] = (int*) malloc(2 * sizeof(int));
-        }
-        for (int i = 0; i < NumberEclipse; i ++) {
-           LocationEclipse[i] = (int*) malloc(2 * sizeof(int));
-        }
-        for (int i = 0; i < NumberInfected; i ++) {
-           LocationInfected[i] = (int*) malloc(2 * sizeof(int));
-        }
-        for (int i = 0; i < NumberVirus; i ++) {
-           LocationVirus[i] = (int*) malloc(2 * sizeof(int));
-        }
+    for (int i = 0; i < NumberHealthy; i ++) {
+       LocationHealthy[i] = (int*) malloc(2 * sizeof(int));
+    }
+    for (int i = 0; i < NumberEclipse; i ++) {
+       LocationEclipse[i] = (int*) malloc(2 * sizeof(int));
+    }
+    for (int i = 0; i < NumberInfected; i ++) {
+       LocationInfected[i] = (int*) malloc(2 * sizeof(int));
+    }
+    for (int i = 0; i < NumberDead; i ++) {
+       LocationDead[i] = (int*) malloc(2 * sizeof(int));
+    }
+    for (int i = 0; i < NumberVirus; i ++) {
+       LocationVirus[i] = (int*) malloc(2 * sizeof(int));
+    }
 
-        int IndexerH = 0, IndexerE = 0, IndexerI = 0, IndexerO = 0;
-        for (int y = 0; y < Ny; y ++) {
-            for (int x = 0; x < Nx; x ++) {
-                switch (cells[x + Nx * y + Nx * Ny * 0]) {
-                  case 'h':
-                    LocationHealthy[IndexerH][0] = x;
-                    LocationHealthy[IndexerH][1] = y;
-                    IndexerH ++;
-                    break;
-                  case 'e':
-                    LocationEclipse[IndexerE][0] = x;
-                    LocationEclipse[IndexerE][1] = y;
-                    IndexerE ++;
-                    break;
-                  case 'i':
-                    LocationInfected[IndexerI][0] = x;
-                    LocationInfected[IndexerI][1] = y;
-                    IndexerI ++;
-                    break;
-                  case 'o':
-                    LocationVirus[IndexerO][0] = x;
-                    LocationVirus[IndexerO][1] = y;
-                    IndexerO ++;
-                    break;
-                }
+    int IndexerH = 0, IndexerE = 0, IndexerI = 0, IndexerD = 0, IndexerO = 0;
+    for (int y = 0; y < Ny; y ++) {
+        for (int x = 0; x < Nx; x ++) {
+            switch (cells[x + Nx * y + Nx * Ny * 0]) {
+              case 'h':
+                LocationHealthy[IndexerH][0] = x;
+                LocationHealthy[IndexerH][1] = y;
+                IndexerH ++;
+                break;
+              case 'e':
+                LocationEclipse[IndexerE][0] = x;
+                LocationEclipse[IndexerE][1] = y;
+                IndexerE ++;
+                break;
+              case 'i':
+                LocationInfected[IndexerI][0] = x;
+                LocationInfected[IndexerI][1] = y;
+                IndexerI ++;
+                break;
+              case 'd':
+                LocationDead[IndexerD][0] = x;
+                LocationDead[IndexerD][1] = y;
+                IndexerD ++;
+                break;
+              default:
+
+                break;
             }
+            if (cells[x + Nx * y + Nx * Ny * 0] != 'o') {
+                LocationVirus[IndexerO][0] = x;
+                LocationVirus[IndexerO][1] = y;
+                IndexerO ++;
+            }
+
         }
+    }
+}
+
+void CerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell, float regenParameter){
+
+        NumberHealthy = 0;
+        NumberEclipse = 0;
+        NumberInfected = 0;
+        NumberDead = 0;
+        NumberVirus = 0;
+
+        findCellTypeLocationsAndCount(Nx, Ny);
 
         /**
           HealthyCells time
@@ -258,13 +307,13 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
 
                 if ((ecl[Row + Nx * Column] + th[Row + Nx * Column]) < ut[Row + Nx * Column]) {
                     cells[Row + Nx * Column + Nx * Ny * 1] = 'i';
-                    inf[Row + Nx * Column] = inf[Row + Nx * Column] + ti; // Ti(TauI, ni);
+                    inf[Row + Nx * Column] += Ti(TauI, ni); // Ti(TauI, ni);
                 }
             }
         }
 
         /**
-          Infection spreads ================================================================================================
+          Infection spreads
         */
 
         if (cell2cell == 1) {
@@ -310,42 +359,42 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
                         if ((LeftColumnExists == 1) && (cells[Row + Nx * LeftColumn + Nx * Ny * 0] != 'o')) {
                             if (cells[Row + Nx * LeftColumn + Nx * Ny * 0] == 'h') {
                                 cells[Row + Nx * LeftColumn + Nx * Ny * 1] = 'e';
-                                ecl[Row + Nx * LeftColumn] = te;
+                                ecl[Row + Nx * LeftColumn] = Te(TauE, ne);
                             }
                         }
 
                         if ((RightColumnExists == 1) && (cells[Row + Nx * RightColumn + Nx * Ny * 0] != 'o')) {
                             if (cells[Row + Nx * RightColumn + Nx * Ny * 0] == 'h') {
                                 cells[Row + Nx * RightColumn + Nx * Ny * 1] = 'e';
-                                ecl[Row + Nx * RightColumn] = te;
+                                ecl[Row + Nx * RightColumn] = Te(TauE, ne);
                             }
                         }
 
                         if ((AboveRowExists == 1) && (cells[AboveRow + Nx * Column + Nx * Ny * 0] != 'o')) {
                             if (cells[AboveRow + Nx * Column + Nx * Ny * 0] == 'h') {
                                 cells[AboveRow + Nx * Column + Nx * Ny * 1] = 'e';
-                                ecl[AboveRow + Nx * Column] = te;
+                                ecl[AboveRow + Nx * Column] = Te(TauE, ne);
                             }
                         }
 
                         if ((BelowRowExists == 1) && (cells[BelowRow + Nx * Column + Nx * Ny * 0] != 'o')) {
                             if (cells[BelowRow + Nx * Column + Nx * Ny * 0] == 'h') {
                                 cells[BelowRow + Nx * Column + Nx * Ny * 1] = 'e';
-                                ecl[BelowRow + Nx * Column] = te;
+                                ecl[BelowRow + Nx * Column] = Te(TauE, ne);
                             }
                         }
 
                         if ((AboveRowExists == 1) && (RightColumnExists == 1) && (cells[AboveRow + Nx * RightColumn + Nx * Ny * 0] != 'o')) {
                             if (cells[AboveRow + Nx * RightColumn + Nx * Ny * 0] == 'h') {
                                 cells[AboveRow + Nx * RightColumn + Nx * Ny * 1] = 'e';
-                                ecl[AboveRow + Nx * RightColumn] = te;
+                                ecl[AboveRow + Nx * RightColumn] = Te(TauE, ne);
                             }
                         }
 
                         if ((BelowRowExists == 1) && (LeftColumnExists == 1) && (cells[BelowRow + Nx * LeftColumn + Nx * Ny * 0] != 'o')) {
                             if (cells[BelowRow + Nx * LeftColumn + Nx * Ny * 0] == 'h') {
                                 cells[BelowRow + Nx * LeftColumn + Nx * Ny * 1] = 'e';
-                                ecl[BelowRow + Nx * LeftColumn] = te;
+                                ecl[BelowRow + Nx * LeftColumn] = Te(TauE, ne);
                             }
                         }
                     }
@@ -443,7 +492,7 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
                         if (probability < pinfect) {
                             if (cells[Row + Nx * Column + Nx * Ny * 0] == 'h') {
                                 cells[Row + Nx * Column + Nx * Ny * 1] = 'e';
-                                ecl[Row + Nx * Column] = te;
+                                ecl[Row + Nx * Column] = Te(TauE, ne);
                             }
                         }
                         adaptedtimestepcount /= 2.0;
@@ -455,7 +504,7 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
                         if (probability < pinfect) {
                             if (cells[Row + Nx * Column + Nx * Ny * 0] == 'h') {
                                 cells[Row + Nx * Column + Nx * Ny * 1] = 'e';
-                                ecl[Row + Nx * Column] = te;
+                                ecl[Row + Nx * Column] = Te(TauE, ne);
                             }
                         }
                     }
@@ -467,35 +516,60 @@ void modifiedCerialViralTransmission(int Nx, int Ny, int cell2cell, int freecell
           kills cells
         */
         if (NumberInfected != 0) {
-            int Row;
-            int Column;
+            int Row, Column;
             for (int j = 0; j < NumberInfected; j++) {
                 Row = LocationInfected[j][0];
                 Column = LocationInfected[j][1];
                 if (ut[Row + Nx * Column] > (inf[Row + Nx * Column] + ecl[Row + Nx * Column] + th[Row + Nx * Column])) {
                     cells[Row + Nx * Column + Nx * Ny * 1] = 'd';
-                    if (CODETESTINGCONDITIONS == 1) { // What is this used for?
-                        cells[Row + Nx * Column + Nx * Ny * 1] = 'i';
-                    }
                 }
             }
         }
 
-        for (int i = 0; i < NumberHealthy; i++) {
+        /**
+          Cell regeneration =====================================================================
+        */
+
+        if (NumberDead != 0 && regensAllowed) {
+            int Row, Column;
+            for (int j = 0; j < NumberDead; j ++) {
+                Row = LocationDead[j][0];
+                Column = LocationDead[j][1];
+                int index = Row + Nx * Column;
+                if (ut[index] > (inf[index] + ecl[index] + th[index] + exponentialDistro(regenParameter))) {
+                    th[index] = inf[index] + ecl[index] + th[index] + timeDead[index];
+                    ecl[index] = Te(TauE, ne);
+                    inf[index] = Ti(TauI, ni);
+
+                    // cells[index + Nx * Ny * 1] = 'h';
+                    cells[Row + Nx * Column + Nx * Ny * 1] = 'h';
+                    // cells[index] = 'h';
+                    // cout << "Regen Occured" << endl;
+
+                    totalRegenerations ++;
+                }
+            }
+        }
+
+        for (int i = 0; i < NumberHealthy; i ++) {
            free(LocationHealthy[i]);
         }
-        for (int i = 0; i < NumberEclipse; i++) {
+        for (int i = 0; i < NumberEclipse; i ++) {
            free(LocationEclipse[i]);
         }
-        for (int i = 0; i < NumberInfected; i++) {
+        for (int i = 0; i < NumberInfected; i ++) {
            free(LocationInfected[i]);
         }
-        for (int i = 0; i < NumberVirus; i++) {
+        for (int i = 0; i < NumberDead; i ++) {
+           free(LocationDead[i]);
+        }
+        for (int i = 0; i < NumberVirus; i ++) {
            free(LocationVirus[i]);
         }
         free(LocationHealthy);
         free(LocationEclipse);
         free(LocationInfected);
+        free(LocationDead);
         free(LocationVirus);
 
         for (int j = 0; j<Ny; j++) {
