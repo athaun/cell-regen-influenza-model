@@ -1,4 +1,4 @@
-# Investigating the Effects of Cellular regeneration Using an Agent-Based Model
+# Investigating the Effects of Cellular regeneration on viral transmission Using an Agent-Based Model
 ### TCU Research Apprenticeship Program
 
 Treating viruses and infections is important for the general welfare. Everyone gets sick and illness negatively affects all aspects of life. Most viral infections can last for weeks, even influenza (the flu). During infections, healthy cells can grow in order to replenish the cells dying from the virus. Past viral models, especially those for influenza, tend to ignore cellular regeneration – even when it occurs in short duration infections like the flu. This research accounts for cellular regeneration, using an agent-based framework, and varies the regeneration rate in order to understand how this regeneration affects viral infections. The model used represents virus infections and spread in a two-dimensional layer of cells in order to generate total virus over time graphs for corresponding regeneration rates.
