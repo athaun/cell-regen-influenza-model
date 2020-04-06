@@ -9,7 +9,7 @@ void runSimulation (float regenParameter) {
 
 
             //Creating Save Path
-            creatingPathToFolderAndDirectory(StartRuns + BigIndex, NumberOfLayers, MOI[q]);
+            creatingPathToFolderAndDirectory(StartRuns + BigIndex, NumberOfLayers, MOI[q], regenParameter);
             //Creating placeholder variables for multiple runs
             int cell2cell = CELL2CELL;
             int freecell = FREECELL;

@@ -2,7 +2,7 @@
 /**
   this contains methods that print to log files, or manipulate the system
 */
-void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float MOI) {
+void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float MOI, float regenParameter) {
     char TransmissionType[10] = "";
     if (CELL2CELL == 1) {
         if (FREECELL == 1) {
@@ -10,8 +10,7 @@ void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float M
         } else {
             strcat(TransmissionType,"CELL2CELL");
         }
-    }
-    else if (CELL2CELL == 0) {
+    } else if (CELL2CELL == 0) {
 	      if (FREECELL == 0) {
             strcat(TransmissionType,"Neither");
         } else {
@@ -49,6 +48,12 @@ void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float M
     strcat(Path_to_Folder,Buffer);
     strcat(Path_to_Folder,"-");
     strcat(Path_to_Folder,"MOI");
+
+    strcat(Path_to_Folder, "_");
+    sprintf(Buffer,"%.3f", regenParameter);
+    strcat(Path_to_Folder, Buffer);
+    strcat(Path_to_Folder, "-RP");
+    // regenParameter
 
     strcat(directory,"mkdir -p ");
     strcat(directory,Path_to_Folder);

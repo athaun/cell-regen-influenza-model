@@ -3,6 +3,7 @@
 
 /**
   TODO:
+  - add proper file saving
   - add autographing
 
   CHANGELOG:
@@ -13,6 +14,9 @@
   1.13.2020
   - finished the interface with method declarations
   - cleaned up if/else ladders with switch statements
+  2.24.2020
+  - finished cerial cell regen
+
 */
 
 /** Imports */
