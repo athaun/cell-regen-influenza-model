@@ -68,6 +68,10 @@ void deviceSetupAndMemoryAllocation(int Nx, int Ny) {
 	errorCheck("cudaMalloc EclipsePhaseLength Mem");
 	cudaMalloc((void**)&InfectionPhaseLength_GPU, Nx * Ny * sizeof(float));
 	errorCheck("cudaMalloc InfectionPhaseLength Mem");
+    cudaMalloc((void**)&RegenTime_GPU, Nx * Ny * sizeof(float));
+	errorCheck("cudaMalloc RegenTime Mem");
+    cudaMalloc((void**)&timeDead_GPU, Nx * Ny * sizeof(float));
+	errorCheck("cudaMalloc timeDead Mem");
 }
 
 __global__ void cuRand_Setup(curandState *state) {
@@ -85,13 +89,13 @@ __device__ float PU_GPU(curandState *state) {
     return Random;
 }
 
-__global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *inf, float *th,  float *epl, float *ipl, systemConstantsStruct constant, int cell2cell, int freecell, curandState *state, int NumberOfLayers) {
+__global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *inf, float *th,  float *epl, float *ipl, float *rt, systemConstantsStruct constant, int cell2cell, int freecell, curandState *state, int NumberOfLayers, bool regensAllowed, float* timeDead) {
 
     int Row = threadIdx.x + blockIdx.x * blockDim.x;
     int Column =  threadIdx.y + blockIdx.y * blockDim.y;
 
-    int NX = (2 * NumberOfLayers - 1);
-    int NY = (2 * NumberOfLayers - 1);
+    int NX = (2 * NumberOfLayers - 1); // rows
+    int NY = (2 * NumberOfLayers - 1); // columns
     int NXNY = NX * NY;
 
     if ((cells[Row + NX * Column + NXNY * 0] != 'o') && (Row + NX * Column + NXNY < 2 * NXNY)) {
@@ -162,7 +166,21 @@ __global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *
         }
 
         //The Cell behavior
-        if (cells[Row + NX * Column + NXNY * 0] == 'i') {
+
+        // Regen
+        if (cells[Row + NX * Column + NXNY * 0] == 'd') {
+            if (regensAllowed) {
+                int index = Row + NX * Column;
+                if (ut[index] > (inf[index] + ecl[index] + th[index] + rt[index])) {
+                    th[index] = inf[index] + ecl[index] + th[index] + timeDead[index];
+                    ecl[index] = epl[index];
+                    inf[index] = ipl[index];
+                    cells[Row + NX * Column + NX * NY * 1] = 'h';
+                }
+            }
+        }
+
+        else if (cells[Row + NX * Column + NXNY * 0] == 'i') {
             // Infectied
             if (ut[Row + NX * Column] > (inf[Row + NX * Column] + ecl[Row + NX * Column] + th[Row + NX * Column])) {
                 cells[Row + NX * Column + NXNY * 1] = 'd';

@@ -29,7 +29,7 @@ void creatingPathToFolderAndDirectory (int BigIndex, int NumberOfLayers, float M
     if (RUNCPU == 1) {
         strcat(Path_to_Folder,"ViralModel/");
     } else {
-        strcat(Path_to_Folder,"/media / baylorfain / HDD / ViralModel/");
+        strcat(Path_to_Folder,"ViralModel/");
     }
     // strftime(TheCurrentTime, 50, "%m-%d/%I:%M", SpecificMoment);
     strftime(TheCurrentTime, 50, "%m-%d/", SpecificMoment);

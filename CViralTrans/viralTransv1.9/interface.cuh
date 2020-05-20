@@ -49,7 +49,7 @@ using namespace std;
 #define PI 3.1415926535897932f
 
 #define CODETESTINGCONDITIONS 0
-#define RUNCPU 1
+#define RUNCPU 0
 
 // Globals to setup the kernals
 extern dim3 BlockConfig, GridConfig;
@@ -105,6 +105,7 @@ extern float* vtemp;
 extern float* vtemp_GPU;
 extern float* th;
 extern float* timeDead;
+extern float* timeDead_GPU;
 extern float* th_GPU;
 extern float* ut;
 extern float* ut_GPU;
@@ -112,6 +113,8 @@ extern float* EclipsePhaseLength;
 extern float* EclipsePhaseLength_GPU;
 extern float* InfectionPhaseLength;
 extern float* InfectionPhaseLength_GPU;
+extern float* RegenTime;
+extern float* RegenTime_GPU;
 extern int NumberOfCells;
 extern int NumberDead;
 

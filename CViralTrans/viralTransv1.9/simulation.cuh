@@ -71,6 +71,10 @@ void runSimulation (float regenParameter) {
                 errorCheck("cudaMemcpy EclipsePhaseLength HtoD");
                 cudaMemcpy(InfectionPhaseLength_GPU, InfectionPhaseLength, Nx * Ny * sizeof(float), cudaMemcpyHostToDevice );
                 errorCheck("cudaMemcpy InfectionPhaseLength HtoD");
+                cudaMemcpy(RegenTime_GPU, RegenTime, Nx * Ny * sizeof(float), cudaMemcpyHostToDevice);
+                errorCheck("cudaMemcpy RegenTime HtoD");
+                cudaMemcpy(timeDead_GPU, timeDead, Nx * Ny * sizeof(float), cudaMemcpyHostToDevice);
+                errorCheck("cudaMemcpy timeDead HtoD");
             }
 
             //Runs simulation
@@ -81,7 +85,7 @@ void runSimulation (float regenParameter) {
 
                 if (RUNCPU == 0) {
                     // GPU code
-                    kernel<<<GridConfig,BlockConfig>>>(cells_GPU, vtemp_GPU, ut_GPU, ecl_GPU, inf_GPU, th_GPU, EclipsePhaseLength_GPU, InfectionPhaseLength_GPU, SystemConstants, cell2cell, freecell, state, NumberOfLayers);
+                    kernel<<<GridConfig,BlockConfig>>>(cells_GPU, vtemp_GPU, ut_GPU, ecl_GPU, inf_GPU, th_GPU, EclipsePhaseLength_GPU, InfectionPhaseLength_GPU, RegenTime_GPU, SystemConstants, cell2cell, freecell, state, NumberOfLayers, regensAllowed, timeDead_GPU);
                 } else {
                     CerialViralTransmission(Nx, Ny, cell2cell, freecell, regenParameter);
                 }

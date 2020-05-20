@@ -131,7 +131,7 @@ void allocateMemory(int Nx, int Ny) {
     timeDead = (float*) malloc(Nx * Ny * sizeof(float));
     EclipsePhaseLength = (float*) malloc(Nx * Ny * sizeof(float)); // Produces an array of eclipse phase durations for cells
     InfectionPhaseLength = (float*) malloc(Nx * Ny * sizeof(float)); // Produces an array of infection phase durations for cells
-
+    RegenTime = (float*) malloc(Nx * Ny * sizeof(float));
 }
 
 void initailConditions(int Nx, int Ny) {
@@ -148,6 +148,7 @@ void initailConditions(int Nx, int Ny) {
             timeDead[i + Nx * j] = 0.0;
             EclipsePhaseLength[i + Nx * j] = Te(TauE,ne);
             InfectionPhaseLength[i + Nx * j]  = Ti(TauI,ni);
+            RegenTime[i + Nx * j] = exponentialDistro(regenParameter);
        }
     }
 }

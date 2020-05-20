@@ -17,6 +17,11 @@
   2.24.2020
   - finished cerial cell regen
 
+  TODO:
+  - do 10 runs for each regeneration separated
+  - 60 day runs 
+
+
 */
 
 /** Imports */
@@ -35,11 +40,11 @@ dim3 BlockConfig, GridConfig;
 int CELL2CELL = 0;
 int FREECELL = 1;
 float timestep = 0.005;    // Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1 / 3600) hr = 1 sec
-float endtime = 30 * 24; // (2 * 365) * 24;   // in hours
+float endtime = 60 * 24; // (2 * 365) * 24;   // in hours
 int Save = (1 / timestep); // the number of time the program saves to file, (1 / timestep) results in 1 save every simulated hour
-int NumberOfLayers = 7; // 607 is a million hexagons in a circle
+int NumberOfLayers = 607; // 607 is a million hexagons in a circle
 int StartRuns = 0;
-int NumberOfRuns = 1;
+int NumberOfRuns = 10;
 
 // Physical Parameters
 // float MOI[6] = {powf(10,0), powf(10,-1), powf(10,-2), powf(10,-3), powf(10,-4), powf(10,-5)};
@@ -78,6 +83,7 @@ float* vtemp;
 float* vtemp_GPU;
 float* th;
 float* timeDead;
+float* timeDead_GPU;
 float* th_GPU;
 float* ut;
 float* ut_GPU;
@@ -85,6 +91,8 @@ float* EclipsePhaseLength;
 float* EclipsePhaseLength_GPU;
 float* InfectionPhaseLength;
 float* InfectionPhaseLength_GPU;
+float* RegenTime;
+float* RegenTime_GPU;
 int NumberOfCells;
 
 int NumberDead1;
@@ -157,6 +165,7 @@ void freeMemory() {
     free(ut);
     free(EclipsePhaseLength);
     free(InfectionPhaseLength);
+    free(RegenTime);
 
     if (RUNCPU == 0) {
 	    cudaFree(cells_GPU);
@@ -167,7 +176,9 @@ void freeMemory() {
 	    cudaFree(ut_GPU);
 	    cudaFree(EclipsePhaseLength_GPU);
 	    cudaFree(InfectionPhaseLength_GPU);
+        cudaFree(RegenTime_GPU);
 	    cudaFree(state);
+        cudaFree(timeDead_GPU);
     }
 }
 
