@@ -16,7 +16,9 @@ void runSimulation (float regenParameter) {
             //Building Cells
             creatingCellLocations();
 
-            std::cout << "Day\tHealthy\teclipse\tinfect\tdead\tregens\tViral Load" << std::endl;
+            if (RUNCPU == 1) {
+                std::cout << "Day\tHealthy\teclipse\tinfect\tdead\tregens\tViral Load" << std::endl;
+            }
 
             //Number of Cells
             //Number of initial infected cells
@@ -133,7 +135,7 @@ void runSimulation (float regenParameter) {
                 }
 
                 //Number of days completed
-                if ((timestepcount % (24 * int(1 / timestep))) == 0) {
+                if ((timestepcount % (24 * int(1 / timestep))) == 0 && RUNCPU == 1) {
                     std::cout <<
                       (timestepcount * timestep) / 24 <<
                       "\t" << NumberHealthy <<
