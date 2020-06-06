@@ -94,9 +94,9 @@ void runSimulation (float regenParameter) {
 
                 if ((timestepcount % Save) == 0) {
                     if (RUNCPU == 0) {
-                        cudaMemcpy(cells, cells_GPU, Nx * Ny * 2 * sizeof(char), cudaMemcpyDeviceToHost );
+                        cudaMemcpy(cells, cells_GPU, Nx * Ny * 2 * sizeof(char), cudaMemcpyDeviceToHost);
                         errorCheck("cudaMemcpy cells DtoH");
-                        cudaMemcpy(vtemp, vtemp_GPU, Nx * Ny * 2 * sizeof(float), cudaMemcpyDeviceToHost );
+                        cudaMemcpy(vtemp, vtemp_GPU, Nx * Ny * 2 * sizeof(float), cudaMemcpyDeviceToHost);
                         errorCheck("cudaMemcpy vtemp DtoH");
                     }
 
@@ -159,7 +159,6 @@ void runSimulation (float regenParameter) {
                 if ((AmountOfVirus < pow(10, 1.0)) && (NumberDead1 == NumberOfCells)) {
                     break;
                 }
-
                 timestepcount ++;
             }
 

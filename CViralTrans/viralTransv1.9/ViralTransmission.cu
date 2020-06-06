@@ -19,7 +19,7 @@
 
   TODO:
   - do 10 runs for each regeneration separated
-  - 60 day runs 
+  - 60 day runs
 
 
 */
@@ -40,7 +40,7 @@ dim3 BlockConfig, GridConfig;
 int CELL2CELL = 0;
 int FREECELL = 1;
 float timestep = 0.005;    // Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1 / 3600) hr = 1 sec
-float endtime = 60 * 24; // (2 * 365) * 24;   // in hours
+float endtime = 3 * 24; // (2 * 365) * 24;   // in hours
 int Save = (1 / timestep); // the number of time the program saves to file, (1 / timestep) results in 1 save every simulated hour
 int NumberOfLayers = 607; // 607 is a million hexagons in a circle
 int StartRuns = 0;
@@ -166,6 +166,7 @@ void freeMemory() {
     free(EclipsePhaseLength);
     free(InfectionPhaseLength);
     free(RegenTime);
+    free(timeDead);
 
     if (RUNCPU == 0) {
 	    cudaFree(cells_GPU);

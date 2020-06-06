@@ -270,7 +270,7 @@ __global__ void kernel(char *cells, float *vtemp, float *ut, float *ecl, float *
                         }
                         adaptedtimestepcount = adaptedtimestepcount / 2.0;
                         adaptedtimestep = adaptedtimestep * 2.0;
-                        pinfect = vtemp[Row + NX * Column + NXNY * 2] * constant.beta * adaptedtimestep;
+                        pinfect = vtemp[Row + NX * Column + NXNY * 1] * constant.beta * adaptedtimestep;
                     }
                     if (adaptedtimestepcount == 1.0) {
                         vtemp[Row + NX * Column + NXNY * 1] = vtemp[Row + NX * Column + NXNY * 0] + VirusProduced - VirusOut + VirusIn - VirusDecay;
