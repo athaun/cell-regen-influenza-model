@@ -14,9 +14,8 @@
   </p>
 </p>
 
-
-
 ## Running C simulation:
+> Warning: Depending on the run parameters, log files can be in excess of 30GB!
 ### Single run
 Download/clone (and extract) to any directory, which will be referenced as `base/`
 
@@ -33,7 +32,6 @@ run:
 $ chmod +x runGPU.sh
 $ ./runGPU.sh
 ```
-> Warning: Depending on the run parameters, log files can be in excess of 30GB!
 
 ## Library and API requirements:
 
