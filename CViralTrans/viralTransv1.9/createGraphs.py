@@ -7,6 +7,7 @@ import os
 import sys
 import datetime
 import shutil
+import scipy.optimize as optim
 
 
 
@@ -86,15 +87,15 @@ class Tc:
 print(Tc.BOLD, Tc.UNDERLINE, Tc.INFO, "Beginning Graph Analysis", Tc.END)
 
 MOI = [-2.0] # can be multiple values of MOI
-NumberOfRuns = 1
+NumberOfRuns = 8
 date1 = sys.argv[1]
 date2 = "{}-{}".format(str(currentDT.month).zfill(2), str(currentDT.day).zfill(2)) # example: 03-14
 
 # /run/media/asher/Backups/researchApprentice/scpTCU/  SCP-Mar20  /ahaun/Ccode/run1/ViralModel  /03-14/  193_4-FREECELL_-2.0-MOI_0.100-RP
 
 OuterPath = r"/run/media/asher/TCU-stuff/currentCode/CViralTrans/viralTransv1.9/ViralModel".format(date1)
-NumberOfLayers = 7
-regenParams = ["{:.3f}".format(0.003), "{:.3f}".format(0.010), "{:.3f}".format(0.030), "{:.3f}".format(0.100), "{:.3f}".format(0.400), "{:.3f}".format(1.000), "{:.3f}".format(3.000)] # must be floats
+NumberOfLayers = 607
+# regenParams = ["{:.3f}".format(0.003), "{:.3f}".format(0.010), "{:.3f}".format(0.030), "{:.3f}".format(0.100), "{:.3f}".format(0.400), "{:.3f}".format(1.000), "{:.3f}".format(3.000)] # must be floats
 regenParams = ["{:.3f}".format(0.100)]
 cellToCell = False
 
@@ -140,7 +141,9 @@ for j in range(len(MOI)): # only using one MOI, this loop ONLY runs once.
     os.system("""
               for d in {}/*; do
               cd "$d"
-              cp -r * ../
+              # cp -r * ../
+              # rsync -av --progress -r * ../
+              rsync -vrltD --stats --human-readable -r * ../ | pv -lep -s 42 >/dev/null
               cd ..
               done
               ls
@@ -246,8 +249,6 @@ for j in range(len(MOI)): # only using one MOI, this loop ONLY runs once.
             plt.close()
             fig.savefig(os.path.join(Inner_Path_to_Folder,"VirusVsTime"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
 
-
-
             """
                 calculating upslope of virus vs. time
 
@@ -258,10 +259,10 @@ for j in range(len(MOI)): # only using one MOI, this loop ONLY runs once.
                 result = logisticfit(x, y, IndexOfPeakTime)
                 result[0] is the growth rate
             """
-            IndexOfPeakTime = np.argmax(VirusArray)
+            IndexOfPeakTime = numpy.argmax(VirusArray)
             PeakTime = TimeArray[IndexOfPeakTime]
             x = TimeArray[2:PeakTime]
-            y = np.divide(VirusArray[2:PeakTime], VirusArray[PeakTime])
+            y = numpy.divide(VirusArray[2:PeakTime], VirusArray[PeakTime])
             upslope = logisticfit(x, y, IndexOfPeakTime)[0]
 
 
@@ -269,11 +270,11 @@ for j in range(len(MOI)): # only using one MOI, this loop ONLY runs once.
             fo.write("Regen Parameter: {}".format(k))
             fo.write("Viral Peak: {}".format(numpy.max(VirusArray)))
             fo.write("Chronic Load: {}".format(numpy.average(VirusArray[150:400])))
-            fo.write("Upslope: {}".format())
+            fo.write("Upslope: {}".format(upslope))
             fo.close()
             print("  Viral Peak: ", numpy.max(VirusArray))
             print("  Chronic Load: {}".format(numpy.average(VirusArray[500:600])))
-            print("  Upslope: {}".format(upslope) # use logistic fit here
+            print("  Upslope: {}".format(upslope)) # use logistic fit here
 
             BigMOI[j][i] = max(BigVirusArray[i])
 
