@@ -1,4 +1,17 @@
-![Splash](/Splash.png)
+<p align="center">
+  <img src="/Splash.png" alt="Logo">
+
+  <h2 align="center">Investigating the Effects of Cellular regeneration on viral transmission Using an Agent-Based Model</h2>
+
+  <p align="center">
+    TCU Research Apprenticeship program
+    <br />
+    
+  </p>
+</p>
+
+
+
 # Investigating the Effects of Cellular regeneration on viral transmission Using an Agent-Based Model
 ### TCU Research Apprenticeship Program
 
