@@ -1,3 +1,4 @@
+![Splash](/Splash.png)
 # Investigating the Effects of Cellular regeneration on viral transmission Using an Agent-Based Model
 ### TCU Research Apprenticeship Program
 
