@@ -5,7 +5,6 @@
 
   <p align="center">
     <br />
-    <br />
     <img src="https://img.shields.io/badge/Made%20using-NVidia%20Cuda-brightgreen">
     <img src="https://img.shields.io/badge/Made%20Using-Python%203-yellow">
     <img src="https://img.shields.io/badge/Version-2.0-blue">
