@@ -17,8 +17,7 @@
 
 
 ## Running C simulation:
-Note: The cuda version of this simulation works, but does not include cellular regeneration yet.
-
+### Single run
 Download/clone (and extract) to any directory, which will be referenced as `base/`
 
 cd to ```base/CViralTrans/viralTransv2.0```
@@ -27,6 +26,14 @@ run:
 $ nvcc ViralTransmission.cu -o program.out && ./program.out ***
 ```
 *** = the value passed through the command line as a parameter for cell regeneration
+### Multiple runs (linux/unix only)
+cd to ```base/CViralTrans/viralTransv2.0```
+run:
+```bash
+$ chmod +x runGPU.sh
+$ ./runGPU.sh
+```
+> Warning: Depending on the run parameters, log files can be in excess of 30GB!
 
 ## Library and API requirements:
 
@@ -34,6 +41,7 @@ $ nvcc ViralTransmission.cu -o program.out && ./program.out ***
 
 * [Nvidia Cuda Toolkit](https://developer.nvidia.com/cuda-downloads)
 * GCC (C Compiler)
+* Cuda capable GPU with compute capability > 1.0
 
 **Python graphing code requirements:**
 
