@@ -46,3 +46,6 @@ $ ./runGPU.sh
 * [python 3.7](https://www.python.org/downloads/) (I recommend just downloading [anaconda 3.7](https://www.anaconda.com/distribution/))
 * [numpy](https://numpy.org/) (included in Anaconda)
 * [matplotlib](https://matplotlib.org/)
+
+## Research Findings
+![Poster](https://github.com/athaun/Cuda-influenza-model/blob/master/poster%20SRS.png)
