@@ -1,30 +1,14 @@
+/** 
+Viral model with cellular regeneration
+Version 2.0
 
-//nvcc ViralTransmission.cu -o program.out && ./program.out
+Authors:
+Baylor Fain
+Asher Haun
 
-/**
-  TODO:
-  - add proper file saving
-  - add autographing
-
-  CHANGELOG:
-  1.12.2020
-  - separated ViralTransmission.cu into multiple files, and added an interface so that they can communicate
-  - removed the old cerialViralTransmission() method
-  - started to rename variables (especially in for loops) to names that make more sense, ie from j to y when sorting through a 2D array
-  1.13.2020
-  - finished the interface with method declarations
-  - cleaned up if/else ladders with switch statements
-  2.24.2020
-  - finished cerial cell regen
-
-  TODO:
-  - do 10 runs for each regeneration separated
-  - 60 day runs
-
-
+Run: nvcc ViralTransmission.cu -o program.out && ./program.out
 */
 
-/** Imports */
 
 // Include Header files from same directory
 #include "GPU.cuh"
