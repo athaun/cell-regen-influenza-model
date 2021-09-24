@@ -49,4 +49,4 @@ $ ./runGPU.sh
 
 ## Research Findings
 ![Poster](https://github.com/athaun/Cuda-influenza-model/blob/master/poster%20SRS.png)
-![Results](https://github.com/athaun/Graph-results)
+[Results](https://github.com/athaun/Graph-results)
