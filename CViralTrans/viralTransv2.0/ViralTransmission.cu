@@ -131,7 +131,7 @@ float exponentialDistro (double mean) {
     // cout << mean << endl;
     random_device rd;
     default_random_engine generator(rd());
-    exponential_distribution<double> distribution(1/(mean * 24));
+    exponential_distribution<double> distribution(mean * 24); // Should not be 1/(regenRate*24), that is 1/(1/time * 24)
     // cout << (distribution(generator)) << endl;
     return distribution(generator);
 }
