@@ -9,6 +9,9 @@ from scipy.stats import normaltest
 from scipy.stats import ttest_1samp
 import scipy.integrate as integrate
 import matplotlib.ticker as ticker
+from peakutils.peak import indexes
+import peakutils
+
 
 # os.system('cls' if os.name=='nt' else 'clear')
 
@@ -22,7 +25,9 @@ def growthfit(TimeArray, VirusArray, IndexOfPeakTime):
     else:
         def logistic(t, a, b, c):
             return a/(1+np.exp(-b*(t-c)))
-        beginningtime = IndexOfPeakTime*5//10
+        
+        # TODO: we don't care about actual peak, we just want the first hump
+        beginningtime = IndexOfPeakTime * 5 // 10
         x = TimeArray[beginningtime:IndexOfPeakTime]
         y = np.divide(VirusArray[beginningtime:IndexOfPeakTime],VirusArray[IndexOfPeakTime])
         bounds = (0, [2,1,IndexOfPeakTime])
@@ -77,7 +82,6 @@ params = [
         0.03,
         0.1,
         0.3,
-        0.6,
         0.8,
         1.0,
         1.3,
@@ -95,9 +99,9 @@ for i in params:
 regenParamsFloat = []
 for i in range(len(regenParams)):
     regenParamsFloat.append(float(regenParams[i]))
-NumberOfRuns = 10
+NumberOfRuns = 100
 
-OuterPath = r"/media/asher/Backups/finalRun-7-14-20/free/ViralModel"
+OuterPath = r"/media/asher/Backups/PAPER_RUN_100x--9-7-21/free/ViralModel"
 #OuterPath = r"/media/baylor/My Passport/BaylorFain/SARS-CoV-2_Runs/SARS-CoV-2"
 #OuterPath = r"/home/baylor/Documents/Research/Coding/Viral_Transmission/ViralModel/02-03"
 
@@ -231,8 +235,20 @@ for j in range(len(regenParams)):
         fig.savefig(os.path.join(Inner_Path_to_Folder,"VirusVsTime"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
 
         BeginingTime = 2
-        IndexOfPeakTime = numpy.argmax(BigVirusArray[i])
 
+
+
+
+        # Instead of finding the absolute maximum, find the first peak and use that to calculate the upslope.
+        # IndexOfPeakTime = numpy.argmax(BigVirusArray[i])
+        _virusArray = BigVirusArray[i]
+        peakIndices = peakutils.indexes(numpy.array(_virusArray), thres=7.0/max(_virusArray), min_dist=200)
+        IndexOfPeakTime = peakIndices[0]
+
+
+
+
+        # Not sure if this needs to be changed to the first peak... if it isn't used to calculate upslope, maybe it is fine?
         BigPeakVirus[j][i] = max(BigVirusArray[i])
         BigTimeOfPeak[j][i] = BigTimeArray[i][IndexOfPeakTime]
         BigUpSlope[j][i] = growthfit(BigTimeArray[i], BigVirusArray[i], IndexOfPeakTime)[0]
@@ -660,7 +676,7 @@ for j in range(len(regenParams)):
     with open(os.path.join(OUTEROUTER_Path_to_Folder,"AUC.txt"), 'w') as outfile:
         for i in range(len(regenParams)):
             print(str(numpy.mean(BigAUC[i][:]))+","+str(numpy.std(BigAUC[i][:])),file=outfile)
-    with open(os.path.join(OUTEROUTER_Path_to_Folder,"AUC.txt"), 'w') as outfile:
+    with open(os.path.join(OUTEROUTER_Path_to_Folder,"ChronicLoad.txt"), 'w') as outfile:
         for i in range(len(regenParams)):
             print(str(numpy.mean(BigChronicLoad[i][:]))+","+str(numpy.std(BigChronicLoad[i][:])),file=outfile)
 
