@@ -21,21 +21,21 @@ Run: nvcc ViralTransmission.cu -o program.out && ./program.out
 dim3 BlockConfig, GridConfig;
 
 // Simulation Parameters
-int CELL2CELL = 0;
-int FREECELL = 1;
+int CELL2CELL = 1;
+int FREECELL = 0;
 float timestep = 0.005;    // Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1 / 3600) hr = 1 sec
-float endtime = 3 * 24; // (2 * 365) * 24;   // in hours
+float endtime = 30 * 24; // (2 * 365) * 24;   // in hours
 int Save = (1 / timestep); // the number of time the program saves to file, (1 / timestep) results in 1 save every simulated hour
 int NumberOfLayers = 607; // 607 is a million hexagons in a circle
 int StartRuns = 0;
-int NumberOfRuns = 10;
+int NumberOfRuns = 100;
 
 // Physical Parameters
 // float MOI[6] = {powf(10,0), powf(10,-1), powf(10,-2), powf(10,-3), powf(10,-4), powf(10,-5)};
 float MOI[1] = {powf(10, -2)};
 float beta = 2.0; // 2.3 * pow(10,-7); //Infiction rate, units: per hour
 float rho = 562800; // 1920
-float D = 6 * pow(10, -12); // Diffusion rate at 37 degrees celsius unit: m^2 / s //pow(6 * 10,-12) //3.96e - 8
+float D = 2.16  * pow(10, -8); // Diffusion rate at 37 degrees celsius unit: m^2 / s //pow(6 * 10,-12) //3.96e - 8
 float c = 0.105; // Clearance rate, units: per hour
 float deltx = 25.0 * pow(10, -6);
 float deltxprime = deltx * 2;
@@ -131,7 +131,7 @@ float exponentialDistro (double mean) {
     // cout << mean << endl;
     random_device rd;
     default_random_engine generator(rd());
-    exponential_distribution<double> distribution(mean * 24); // Should not be 1/(regenRate*24), that is 1/(1/time * 24)
+    exponential_distribution<double> distribution(1/(mean * 24));
     // cout << (distribution(generator)) << endl;
     return distribution(generator);
 }

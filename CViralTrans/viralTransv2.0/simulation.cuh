@@ -36,7 +36,7 @@ void runSimulation (float regenParameter) {
 
             //Deletes files and initial with values
             if (BigIndex == 0) {
-                printToFileCellAndVirusInitial(Nx, Ny, NumberOfLayers);
+//                printToFileCellAndVirusInitial(Nx, Ny, NumberOfLayers);
             }
 
             printToFileCellAndVirusAnalysisInitial(Nx, Ny);
