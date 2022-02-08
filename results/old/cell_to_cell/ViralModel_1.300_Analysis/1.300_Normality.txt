@@ -1,0 +1,112 @@
+BigPeakVirus
+Shapiro-Wilk
+Statistics= 0.991, p= 0.73
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 0.599, p= 0.741
+Sample looks Gaussian (fail to reject H0)
+Anderson-Darling
+Statistic: 0.276
+15:0.555, data looks normal (fail to reject H0)
+10:0.632, data looks normal (fail to reject H0)
+5:0.759, data looks normal (fail to reject H0)
+2.5:0.885, data looks normal (fail to reject H0)
+1:1.05, data looks normal (fail to reject H0)
+
+
+BigTimeOfPeak
+Shapiro-Wilk
+Statistics= 0.972, p= 0.0326
+Sample does not look Gaussian (reject H0)
+D'Agostino's
+Statistics= 4.29, p= 0.117
+Sample looks Gaussian (fail to reject H0)
+Anderson-Darling
+Statistic: 1.06
+15:0.555, data does not looks normal (reject H0)
+10:0.632, data does not looks normal (reject H0)
+5:0.759, data does not looks normal (reject H0)
+2.5:0.885, data does not looks normal (reject H0)
+1:1.05, data does not looks normal (reject H0)
+
+
+BigUpSlope
+Shapiro-Wilk
+Statistics= 0.984, p= 0.261
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 4.13, p= 0.127
+Sample looks Gaussian (fail to reject H0)
+Anderson-Darling
+Statistic: 0.393
+15:0.555, data looks normal (fail to reject H0)
+10:0.632, data looks normal (fail to reject H0)
+5:0.759, data looks normal (fail to reject H0)
+2.5:0.885, data looks normal (fail to reject H0)
+1:1.05, data looks normal (fail to reject H0)
+
+
+BigDownSlope
+Shapiro-Wilk
+Statistics= 1, p= 1
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 498, p= 6.72e-109
+Sample does not look Gaussian (reject H0)
+Anderson-Darling
+Statistic: nan
+15:0.555, data does not looks normal (reject H0)
+10:0.632, data does not looks normal (reject H0)
+5:0.759, data does not looks normal (reject H0)
+2.5:0.885, data does not looks normal (reject H0)
+1:1.05, data does not looks normal (reject H0)
+
+
+BigEndTime
+Shapiro-Wilk
+Statistics= 1, p= 1
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 498, p= 6.72e-109
+Sample does not look Gaussian (reject H0)
+Anderson-Darling
+Statistic: nan
+15:0.555, data does not looks normal (reject H0)
+10:0.632, data does not looks normal (reject H0)
+5:0.759, data does not looks normal (reject H0)
+2.5:0.885, data does not looks normal (reject H0)
+1:1.05, data does not looks normal (reject H0)
+
+
+BigAUC
+Shapiro-Wilk
+Statistics= 0.989, p= 0.619
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 1.36, p= 0.507
+Sample looks Gaussian (fail to reject H0)
+Anderson-Darling
+Statistic: 0.287
+15:0.555, data looks normal (fail to reject H0)
+10:0.632, data looks normal (fail to reject H0)
+5:0.759, data looks normal (fail to reject H0)
+2.5:0.885, data looks normal (fail to reject H0)
+1:1.05, data looks normal (fail to reject H0)
+
+
+BigChronicLoad
+Shapiro-Wilk
+Statistics= 0.989, p= 0.546
+Sample looks Gaussian (fail to reject H0)
+D'Agostino's
+Statistics= 2.04, p= 0.36
+Sample looks Gaussian (fail to reject H0)
+Anderson-Darling
+Statistic: 0.484
+15:0.555, data looks normal (fail to reject H0)
+10:0.632, data looks normal (fail to reject H0)
+5:0.759, data looks normal (fail to reject H0)
+2.5:0.885, data looks normal (fail to reject H0)
+1:1.05, data looks normal (fail to reject H0)
+
+
