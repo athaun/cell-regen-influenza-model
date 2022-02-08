@@ -21,8 +21,8 @@ Run: nvcc ViralTransmission.cu -o program.out && ./program.out
 dim3 BlockConfig, GridConfig;
 
 // Simulation Parameters
-int CELL2CELL = 1;
-int FREECELL = 0;
+int CELL2CELL = 0;
+int FREECELL = 1;
 float timestep = 0.005;    // Time step for model (No larger than 0.01 hour) 0.005 hr = 18 sec, (1 / 3600) hr = 1 sec
 float endtime = 30 * 24; // (2 * 365) * 24;   // in hours
 int Save = (1 / timestep); // the number of time the program saves to file, (1 / timestep) results in 1 save every simulated hour
@@ -131,7 +131,7 @@ float exponentialDistro (double mean) {
     // cout << mean << endl;
     random_device rd;
     default_random_engine generator(rd());
-    exponential_distribution<double> distribution(1/(mean * 24));
+    exponential_distribution<double> distribution(mean / 24);
     // cout << (distribution(generator)) << endl;
     return distribution(generator);
 }

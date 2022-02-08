@@ -17,6 +17,6 @@ declare -a parameters=(
 for i in "${parameters[@]}"
 do
   echo "[SHELL] Running test with parameter $i";
-  nvcc ViralTransmission.cu -o cell_to_cell${i}.out && ./cell_to_cell${i}.out $i;
+  nvcc ViralTransmission.cu -o free_cell_${i}.out && ./free_cell_${i}.out $i;
   echo "[SHELL] test with parameter $i is done."
 done
