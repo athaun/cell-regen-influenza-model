@@ -29,8 +29,8 @@ $ nvcc ViralTransmission.cu -o program.out && ./program.out ***
 cd to ```base/CViralTrans/viralTransv2.0```
 run:
 ```bash
-$ chmod +x runGPU.sh
-$ ./runGPU.sh
+$ chmod +x multirun.sh
+$ ./multirun.sh
 ```
 
 ## Library and API requirements:

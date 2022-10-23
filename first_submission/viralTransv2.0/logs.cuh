@@ -106,37 +106,37 @@ void printInitialConditions (int SideLength, int RadiusOfCircle, float regenPara
 }
 
 void printToFileCellAndVirusInitial (int Nx, int Ny, int NumberOfLayers) {
-    char File3[100] = "";
-    strcat(File3, Path_to_Folder);
-    strcat(File3, "/cells_over_time.txt");
-    FILE *outfile3 = fopen(File3, "w");
-    if (outfile3 == NULL) {
-        printf("Error opening file!\n");
-        exit(0);
-    }
-    for (int i = 0; i < ((2 * NumberOfLayers) - 1); i ++) {
-        for (int j = 0; j < ((2 * NumberOfLayers) - 1); j ++) {
-            fprintf(outfile3,"%c,",LocationData[i][j]);
-        }
-            fprintf(outfile3,"\n");
-    }
-    fclose(outfile3);
+    // char File3[100] = "";
+    // strcat(File3, Path_to_Folder);
+    // strcat(File3, "/cells_over_time.txt");
+    // FILE *outfile3 = fopen(File3, "w");
+    // if (outfile3 == NULL) {
+    //     printf("Error opening file!\n");
+    //     exit(0);
+    // }
+    // for (int i = 0; i < ((2 * NumberOfLayers) - 1); i ++) {
+    //     for (int j = 0; j < ((2 * NumberOfLayers) - 1); j ++) {
+    //         fprintf(outfile3,"%c,",LocationData[i][j]);
+    //     }
+    //         fprintf(outfile3,"\n");
+    // }
+    // fclose(outfile3);
 
-    char File4[100] = "";
-    strcat(File4,Path_to_Folder);
-    strcat(File4,"/virus_over_time.txt");
-    FILE *outfile4 = fopen(File4,"w");
-    if (outfile4 == NULL) {
-        printf("Error opening file!\n");
-        exit(0);
-    }
-    for (int i = 0; i < ((2 * NumberOfLayers) - 1); i ++) {
-        for (int j = 0; j < ((2 * NumberOfLayers) - 1); j ++) {
-            fprintf(outfile4,"%f,",0.0);
-        }
-            fprintf(outfile4,"\n");
-    }
-    fclose(outfile4);
+    // char File4[100] = "";
+    // strcat(File4,Path_to_Folder);
+    // strcat(File4,"/virus_over_time.txt");
+    // FILE *outfile4 = fopen(File4,"w");
+    // if (outfile4 == NULL) {
+    //     printf("Error opening file!\n");
+    //     exit(0);
+    // }
+    // for (int i = 0; i < ((2 * NumberOfLayers) - 1); i ++) {
+    //     for (int j = 0; j < ((2 * NumberOfLayers) - 1); j ++) {
+    //         fprintf(outfile4,"%f,",0.0);
+    //     }
+    //         fprintf(outfile4,"\n");
+    // }
+    // fclose(outfile4);
 }
 
 void printToFileCellAndVirusAnalysisInitial (int Nx, int Ny) {
@@ -180,37 +180,37 @@ void printToFileCellAndVirusAnalysisInitial (int Nx, int Ny) {
 }
 
 void printToFileCellAndVirus (int Nx, int Ny, int NumberOfLayers) {
-    char File5[100] = "";
-    strcat(File5, Path_to_Folder);
-    strcat(File5, "/cells_over_time.txt");
-    FILE *outfile5 = fopen(File5, "a");
-    if (outfile5 == NULL) {
-        printf("Error opening file!\n");
-        exit(0);
-    }
-    for (int i = 0; i<((2 * NumberOfLayers)-1); i++) {
-        for (int j = 0; j<((2 * NumberOfLayers)-1); j++) {
-            fprintf(outfile5,"%c,",cells[i + Nx * j + Nx * Ny * 0]);
-        }
-            fprintf(outfile5,"\n");
-    }
-    fclose(outfile5);
+    // char File5[100] = "";
+    // strcat(File5, Path_to_Folder);
+    // strcat(File5, "/cells_over_time.txt");
+    // FILE *outfile5 = fopen(File5, "a");
+    // if (outfile5 == NULL) {
+    //     printf("Error opening file!\n");
+    //     exit(0);
+    // }
+    // for (int i = 0; i<((2 * NumberOfLayers)-1); i++) {
+    //     for (int j = 0; j<((2 * NumberOfLayers)-1); j++) {
+    //         fprintf(outfile5,"%c,",cells[i + Nx * j + Nx * Ny * 0]);
+    //     }
+    //         fprintf(outfile5,"\n");
+    // }
+    // fclose(outfile5);
 
-    char File6[100] = "";
-    strcat(File6, Path_to_Folder);
-    strcat(File6, "/virus_over_time.txt");
-    FILE *outfile6 = fopen(File6, "a");
-    if (outfile6 == NULL) {
-        printf("Error opening file!\n");
-        exit(0);
-    }
-    for (int i = 0; i < ((2 * NumberOfLayers)-1); i++) {
-        for (int j = 0; j < ((2 * NumberOfLayers)-1); j++) {
-            fprintf(outfile6,"%f,",vtemp[i + Nx * j + Nx * Ny * 1]);
-        }
-        fprintf(outfile6,"\n");
-    }
-    fclose(outfile6);
+    // char File6[100] = "";
+    // strcat(File6, Path_to_Folder);
+    // strcat(File6, "/virus_over_time.txt");
+    // FILE *outfile6 = fopen(File6, "a");
+    // if (outfile6 == NULL) {
+    //     printf("Error opening file!\n");
+    //     exit(0);
+    // }
+    // for (int i = 0; i < ((2 * NumberOfLayers)-1); i++) {
+    //     for (int j = 0; j < ((2 * NumberOfLayers)-1); j++) {
+    //         fprintf(outfile6,"%f,",vtemp[i + Nx * j + Nx * Ny * 1]);
+    //     }
+    //     fprintf(outfile6,"\n");
+    // }
+    // fclose(outfile6);
 }
 
 void printToFileCellAndVirusAnalysis (float timestep) {
