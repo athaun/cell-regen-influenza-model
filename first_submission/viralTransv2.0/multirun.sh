@@ -1,5 +1,5 @@
 !/bin/bash
-parameters=( 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3 )
+parameters=( 0.03, 0.1, 0.3, 1, 3,  )
 # sadly, the for loop solution did not work :(
 # TODO implement for loop
   (echo "[SHELL] Running test with parameter ${parameters[0]}"; nvcc ViralTransmission.cu -o program0.out && ./program0.out 0.003; echo "[SHELL] test with parameter ${parameters[0]} is done.")
