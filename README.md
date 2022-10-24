@@ -48,5 +48,5 @@ $ ./multirun.sh
 * [matplotlib](https://matplotlib.org/)
 
 ## Research Findings
-![Poster](https://github.com/athaun/Cuda-influenza-model/blob/master/poster%20SRS.png)
-[Results](https://github.com/athaun/Graph-results)
+[SRS Poster 2022 - Asher Haun.pdf](https://github.com/athaun/cell-regen-influenza-model/files/9848342/SRS.Poster.2022.-.Asher.Haun.pdf)
+![image](https://user-images.githubusercontent.com/32278830/197436755-f468c0f3-9a12-41a5-8978-4790c9821265.png)
