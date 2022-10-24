@@ -1,0 +1,11 @@
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
+-inf,nan
