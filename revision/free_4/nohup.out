@@ -1,0 +1,187 @@
+[SHELL] Running test with parameter 0.03
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 0.03 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 0.03 is done.
+[SHELL] Running test with parameter 0.1
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 0.1 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 0.1 is done.
+[SHELL] Running test with parameter 0.3
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 0.3 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 0.3 is done.
+[SHELL] Running test with parameter 0.8
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 0.8 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 0.8 is done.
+[SHELL] Running test with parameter 1.0
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 1 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 1.0 is done.
+[SHELL] Running test with parameter 1.3
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 1.3 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 1.3 is done.
+[SHELL] Running test with parameter 1.7
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 1.7 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 1.7 is done.
+[SHELL] Running test with parameter 2.0
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 2 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 2.0 is done.
+[SHELL] Running test with parameter 3.0
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 3 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 3.0 is done.
+[SHELL] Running test with parameter 5.0
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 5 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 5.0 is done.
+[SHELL] Running test with parameter 10.0
+Hazard1.cu: In function ‘void creatingCellLocations()’:
+Hazard1.cu:353:19: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+     fprintf(outfile2, "Regeneration rate = %d\n", regenParameter);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~
+Hazard1.cu: In function ‘void creatingPathToFolderAndDirectory(int, int, float, float)’:
+Hazard1.cu:210:17: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(Buffer, "%.3f", regenParameter);
+                 ^~~~~~
+Hazard1.cu:210:8: note: ‘sprintf’ output between 4 and 315 bytes into a destination of size 5
+     sprintf(Buffer, "%.3f", regenParameter);
+     ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[H[2J[3J[SUCCESS] 10 passed from the command line.
+
+
+PROGRAM DONE
+[SHELL] test with parameter 10.0 is done.
