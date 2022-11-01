@@ -90,25 +90,19 @@ params = [
         10.0
         ]
 
-#params = [ 0.1 ]
 MOIs = [ -2.0 ]
 
-#regenParams = ["{:.3f}".format(0.010), "{:.3f}".format(0.030), "{:.3f}".format(0.100), "{:.3f}".format(0.200), "{:.3f}".format(0.300), "{:.3f}".format(0.500),"{:.3f}".format(0.700), "{:.3f}".format(1.000), "{:.3f}".format(2.000), "{:.3f}".format(3.000)]
 regenParams = []
 
 for i in params:
     regenParams.append("{:.3f}".format(i))
 
-# regenParams = ["{:.3f}".format(1.000)]
 regenParamsFloat = []
 for i in range(len(regenParams)):
     regenParamsFloat.append(float(regenParams[i]))
 NumberOfRuns = 100
 
 OuterPath = r"/Users/asher/Documents/code/Cuda-influenza-model/revision/free_1/Viralmodel"
-#OuterPath = r"/media/baylor/My Passport/BaylorFain/SARS-CoV-2_Runs/SARS-CoV-2"
-#OuterPath = r"/home/baylor/Documents/Research/Coding/Viral_Transmission/ViralModel/02-03"
-
 
 BigPeakVirus = numpy.empty([len(regenParams), NumberOfRuns],dtype=float )
 BigTimeOfPeak = numpy.empty([len(regenParams), NumberOfRuns],dtype=float )
@@ -257,13 +251,25 @@ for j in range(len(regenParams)):
 
 
             # Not sure if this needs to be changed to the first peak... if it isn't used to calculate upslope, maybe it is fine?
-            BigPeakVirus[j][i] = max(BigVirusArray[i])
-            BigTimeOfPeak[j][i] = BigTimeArray[i][IndexOfPeakTime]
-            BigUpSlope[j][i] = growthfit(BigTimeArray[i], BigVirusArray[i], IndexOfPeakTime)[0]
             BigDownSlope[j][i] = 0.0 #decayfit(BigTimeArray[i], BigEclipseArray[i], BigInfectedArray[i], BigDeadArray[i], BigVirusArray[i])[0]
+            
+            BigPeakVirus[j][i] = max(BigVirusArray[i])
+            print(f"\nBIG PEAK VIRUS \t\t{BigPeakVirus[j][i]}")
+
+            BigTimeOfPeak[j][i] = BigTimeArray[i][IndexOfPeakTime]
+            print(f"BIG TIME OF PEAK \t{BigTimeOfPeak[j][i]}")
+
+            BigUpSlope[j][i] = growthfit(BigTimeArray[i], BigVirusArray[i], IndexOfPeakTime)[0]
+            print(f"BIG UPSLOPE \t\t{BigUpSlope[j][i]}")
+
             BigEndTime[j][i] = BigTimeArray[i][-1]
+            print(f"BIG END TIME \t\t{BigEndTime[j][i]}")
+            
             BigAUC[j][i] = numpy.trapz(numpy.log(BigVirusArray[i][2:]))
+            print(f"BIG AUC \t\t{BigAUC[j][i]}")
+            
             BigChronicLoad[j][i] = numpy.average(VirusArray[500:600])
+            print(f"BIG CHRONIC LOAD \t{BigChronicLoad[j][i]}\n\n")
 
         MedianTimeArray = []
         MedianHealthyArray = []
@@ -390,140 +396,7 @@ for j in range(len(regenParams)):
         # fig.savefig(os.path.join(OUTER_Path_to_Folder,"regenParams-" + str(regenParams[j]) + "Median_VirusVsTime"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
         fig.savefig(os.path.join(OUTER_Path_to_Folder,"regenParams-" + str(regenParams[j]) + "Median_VirusVsTime"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
 
-    #BigPeakVirus
-        histbins = numpy.linspace(min(BigPeakVirus[j]),max(BigPeakVirus[j]),20)
-        hist, bins = numpy.histogram(BigPeakVirus[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigPeakVirus[j])
-        x = numpy.linspace(min(BigPeakVirus[j]), max(BigPeakVirus[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_PeakVirusHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_PeakVirusHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigTimeOfPeak
-        histbins = numpy.linspace(min(BigTimeOfPeak[j]),max(BigTimeOfPeak[j]),20)
-        hist, bins = numpy.histogram(BigTimeOfPeak[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigTimeOfPeak[j])
-        x = numpy.linspace(min(BigTimeOfPeak[j]), max(BigTimeOfPeak[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.ylabel("Frequency")
-        plt.xlabel("Time of peak virus (hours)")
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_TimeOfPeakHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_TimeOfPeakHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigUpSlope
-        histbins = numpy.linspace(min(BigUpSlope[j]),max(BigUpSlope[j]),20)
-        hist, bins = numpy.histogram(BigUpSlope[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigUpSlope[j])
-        x = numpy.linspace(min(BigUpSlope[j]), max(BigUpSlope[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_UpSlopeHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_UpSlopeHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigDownSlope
-        histbins = numpy.linspace(min(BigDownSlope[j]),max(BigDownSlope[j]),20)
-        hist, bins = numpy.histogram(BigDownSlope[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigDownSlope[j])
-        x = numpy.linspace(min(BigDownSlope[j]), max(BigDownSlope[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigEndTime
-        histbins = numpy.linspace(min(BigEndTime[j]),max(BigEndTime[j]),20)
-        hist, bins = numpy.histogram(BigEndTime[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigEndTime[j])
-        x = numpy.linspace(min(BigEndTime[j]), max(BigEndTime[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigAUC
-        histbins = numpy.linspace(min(BigAUC[j]),max(BigAUC[j]),20)
-        hist, bins = numpy.histogram(BigAUC[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigAUC[j])
-        x = numpy.linspace(min(BigAUC[j]), max(BigAUC[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-    #BigChronicLoad
-        histbins = numpy.linspace(min(BigChronicLoad[j]),max(BigChronicLoad[j]),20)
-        hist, bins = numpy.histogram(BigChronicLoad[j], bins=histbins, density=True)
-        width = 0.7 * (bins[1] - bins[0])
-        center = (bins[:-1] + bins[1:]) / 2
-
-        mean, STD = norm.fit(BigChronicLoad[j])
-        x = numpy.linspace(min(BigChronicLoad[j]), max(BigChronicLoad[j]), 1000)
-        p = norm.pdf(x, mean, STD)
-
-        plt.rcParams['figure.figsize'] = [10, 10]
-        fig, ax = plt.subplots()
-        ax.bar(center, hist, align='center', width=width)
-        plt.plot(x, p)
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTER_Path_to_Folder,str(regenParams[j])+"_DownSlopeHist"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+    
 
     #Make Aspect vs regenParams Graphs
         size = 32
@@ -540,54 +413,85 @@ for j in range(len(regenParams)):
         plt.rcParams['ytick.minor.width'] = axessize
         plt.rc('axes', linewidth=axessize)
 
-        fig, ax = plt.subplots()
-        ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
-        holder = []
-        holder1 = []
-        for i in range(len(regenParams)):
-            holder.append(numpy.mean(BigPeakVirus[i][:]))
-            holder1.append(numpy.std(BigPeakVirus[i][:]))
-        plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10, linewidth=axessize)
-        plt.xlabel("Regeneration Rate")
-        plt.ylabel("Peak Virus")
-        plt.xscale("log")
-        plt.yscale("log")
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "PeakViralTitter"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "PeakViralTitter"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        print("\n\nWe have made it here 1 :O\n\n")
+        
+        # fig, ax = plt.subplots()
+        # ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
+        # holder = []
+        # holder1 = []
+        # for i in range(len(regenParams)):
+        #     holder.append(numpy.mean(BigPeakVirus[i][:]))
+        #     holder1.append(numpy.std(BigPeakVirus[i][:]))
 
-        fig, ax = plt.subplots()
-        ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
-        holder = []
-        holder1 = []
-        for i in range(len(regenParams)):
-            holder.append(numpy.mean(BigTimeOfPeak[i][:])/24)
-            holder1.append(numpy.std(BigTimeOfPeak[i][:])/24)
-        plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
-        plt.xlabel("Regeneration Rate")
-        plt.ylabel("Time of Peak (day)")
-        plt.xscale("log")
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "TimeofPeakViralTitter"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "TimeofPeakViralTitter"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        # """
+        # mean: [2424637798.4, nan, 1.87080794908785e-310, nan, nan, 0.0011717647314071656, nan, 2.32235285214234e-310, nan, 3.2577444486046e-310, nan]
+        # std: [8685483.680760251, nan, 0.0, nan, nan, 0.002343529462814331, nan, 0.0, nan, 0.0, nan]
 
-        fig, ax = plt.subplots()
-        ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
-        holder = []
-        holder1 = []
-        for i in range(len(regenParams)):
-            holder.append(numpy.mean(BigUpSlope[i][:])*24)
-            holder1.append(numpy.std(BigUpSlope[i][:])*24)
-        plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
-        plt.xlabel("Regeneration Rate")
-        plt.ylabel("Growth Rate (virus/day)")
-        plt.xscale("log")
-        plt.tight_layout()
-        plt.close()
-        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "UpSlope"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-        fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "UpSlope"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        # mean: [2424637798.4, 2.2357872531514334e+252, 9.23971633377896e+280, 3.135615576410452e+213, 1.394607071970784e+252, 1.3414609338209092e+199, 9.23974957196328e+280, 2.2180300466798154e+199, 9.353225367914818e+251, 2.2694796455354667e+274, 3.3516693581442294e+242]
+        # std: [8685483.680760251, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]
+        # """
+
+        # for i in holder:
+        #     print(f"Checking if {i} is {numpy.nan} ... {i == numpy.nan}")
+
+
+        # # for i in holder1:
+        # #     if math.isnan(i):
+        # #         i == 0.0
+
+        # print(f"\n\nmean: {holder}\nstd: {holder1}\n\n")
+
+        # plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10, linewidth=axessize)
+        # plt.xlabel("Regeneration Rate")
+        # plt.ylabel("Peak Virus")
+        # plt.xscale("log")
+        # plt.yscale("log")
+        # plt.tight_layout()
+        # plt.close()
+        # # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "PeakViralTitter"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "PeakViralTitter"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+
+        # print("\n\nWe have made it here 2 :O\n\n")
+        
+        # fig, ax = plt.subplots()
+        # ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
+        # holder = []
+        # holder1 = []
+        # for i in range(len(regenParams)):
+        #     holder.append(numpy.mean(BigTimeOfPeak[i][:])/24)
+        #     holder1.append(numpy.std(BigTimeOfPeak[i][:])/24)
+        # plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
+        # plt.xlabel("Regeneration Rate")
+        # plt.ylabel("Time of Peak (day)")
+        # plt.xscale("log")
+        # plt.tight_layout()
+        # plt.close()
+        # # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "TimeofPeakViralTitter"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "TimeofPeakViralTitter"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+
+        # fig, ax = plt.subplots()
+        # ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
+        # holder = []
+        # holder1 = []
+        # for i in range(len(regenParams)):
+        #     holder.append(numpy.mean(BigUpSlope[i][:])*24)
+        #     holder1.append(numpy.std(BigUpSlope[i][:])*24)
+        # plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
+        # plt.xlabel("Regeneration Rate")
+        # plt.ylabel("Growth Rate (virus/day)")
+        # plt.xscale("log")
+        # plt.tight_layout()
+        # plt.close()
+        # # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "UpSlope"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "UpSlope"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+
+
+
+####################################################################################
+
+
+
+
 
         # fig, ax = plt.subplots()
         # ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
@@ -631,22 +535,24 @@ for j in range(len(regenParams)):
         # plt.close()
         # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "InfectionDuration"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
         # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "InfectionDuration"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
-
-#        fig, ax = plt.subplots()
-#        ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
-#        holder = []
-#        holder1 = []
-#        for i in range(len(regenParams)):
-#            holder.append(numpy.mean(BigAUC[i][:])/24)
-#            holder1.append(numpy.std(BigAUC[i][:])/24)
-#        plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
-#        plt.xlabel("Regeneration Rate")
-#        plt.ylabel("AUC (log(virus)*day)")
-#        plt.xscale("log")
-#        plt.tight_layout()
-#        plt.close()
+        
+        """
+        fig, ax = plt.subplots()
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
+        holder = []
+        holder1 = []
+        for i in range(len(regenParams)):
+            holder.append(numpy.mean(BigAUC[i][:])/24)
+            holder1.append(numpy.std(BigAUC[i][:])/24)
+        plt.errorbar(regenParamsFloat, holder, yerr=holder1, fmt = "-o", ecolor="black", capsize=10)
+        plt.xlabel("Regeneration Rate")
+        plt.ylabel("AUC (log(virus)*day)")
+        plt.xscale("log")
+        plt.tight_layout()
+        plt.close()
         # fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "AUC"+".pdf"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
- #       fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "AUC"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        fig.savefig(os.path.join(OUTEROUTER_Path_to_Folder, "AUC"+".png"), dpi=fig.dpi, bbox_inches='tight', pad_inches=0.0)
+        """
 
         fig, ax = plt.subplots()
         ax.yaxis.set_major_locator(ticker.MaxNLocator(6))
