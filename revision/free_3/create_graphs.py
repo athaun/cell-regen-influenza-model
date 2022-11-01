@@ -102,7 +102,7 @@ for i in range(len(regenParams)):
     regenParamsFloat.append(float(regenParams[i]))
 NumberOfRuns = 100
 
-OuterPath = r"/home/asher/c2c_3/ViralModel"
+OuterPath = r"/Users/asher/Documents/code/Cuda-influenza-model/revision/free_3/ViralModel"
 
 BigPeakVirus = numpy.empty([len(regenParams), NumberOfRuns],dtype=float )
 BigTimeOfPeak = numpy.empty([len(regenParams), NumberOfRuns],dtype=float )
@@ -141,7 +141,7 @@ for j in range(len(regenParams)):
             os.system('cls' if os.name=='nt' else 'clear')
             print(str(regenParams[j])+"\n")
             print(i)
-            InnerPath = r"/607_"+str(i)+"-CELL2CELL_" + str(MOIs[k]) + "-MOI_"+str(regenParams[j])+"-RP"
+            InnerPath = r"/607_"+str(i)+"-FREECELL_" + str(MOIs[k]) + "-MOI_"+str(regenParams[j])+"-RP"
 
 
     #        InnerPath = r"/607_"+str(i)+"-FREECELL_"+str(logMOI[j])+"-MOI_0.2-probi"

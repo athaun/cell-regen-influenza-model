@@ -1,0 +1,15 @@
+Hexagon Side Lenght = 0.666667
+Number of Layers = 607
+Radius of Circle = 606.666687
+Number of Cells = 1001365
+Regeneration rate = 0
+Time Step = 0.005000
+Number of Saved Time Steps = 2400
+Initial End Time = 2400.000000
+Actual Hours Simulated = 2399.994873
+Final Amount of Virus = 9153311744.000000
+rho = 3000.000000
+log10(D) = -7.665546
+delta x = 0.000050
+c = 0.250000
+Probability of cell to cell infection: 0.200000
