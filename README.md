@@ -48,5 +48,7 @@ $ ./multirun.sh
 * [matplotlib](https://matplotlib.org/)
 
 ## Research Findings
+### Paper in the Journal of Theoretical Biology: [https://doi.org/10.1016/j.jtbi.2022.111370](https://doi.org/10.1016/j.jtbi.2022.111370)
+
 [SRS Poster 2022 - Asher Haun.pdf](https://github.com/athaun/cell-regen-influenza-model/files/9848342/SRS.Poster.2022.-.Asher.Haun.pdf)
 ![image](https://user-images.githubusercontent.com/32278830/197436755-f468c0f3-9a12-41a5-8978-4790c9821265.png)
